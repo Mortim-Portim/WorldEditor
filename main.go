@@ -5,29 +5,35 @@ import (
 
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/mortim-portim/WorldEditor/math"
 )
 
-func main() {
-	if err := ebiten.Run(update, 320, 240, 2, "Hello World"); err != nil {
-		panic(err)
-	}
+type Window struct {
+	matrix *math.Matrix
+	images []ebiten.Image
 }
 
-var square *ebiten.Image
-
-func update(screen *ebiten.Image) error {
+func (w *Window) Update(screen *ebiten.Image) error {
 	screen.Fill(color.NRGBA{0xff, 0x00, 0x00, 0xff})
-	ebitenutil.DebugPrint(screen, "Hello World")
+	return nil
+}
 
-	if square == nil {
-		square, _ = ebiten.NewImage(16, 16, ebiten.FilterNearest)
+func (w *Window) Layout(outsideWidth, outsideHeight int) (int, int) {
+	return 640, 480
+}
+
+//Main funciton
+func main() {
+	window := &Window{}
+
+	path := []string{"./resource/16.png"}
+
+	for p := range path {
+		image, _, _ := ebitenutil.NewImageFromFile(path[p], ebiten.FilterDefault)
+		window.images = append(window.images, *image)
 	}
 
-	square.Fill(color.White)
-
-	opts := &ebiten.DrawImageOptions{}
-	opts.GeoM.Translate(64, 64)
-	screen.DrawImage(square, opts)
-
-	return nil
+	if err := ebiten.RunGame(window); err != nil {
+		panic(err)
+	}
 }
