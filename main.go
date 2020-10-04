@@ -1,88 +1,94 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
+	"log"
 	"math"
 
+	"marvin/GraphEng/GE"
+	"marvin/GraphEng/GE/WObjs"
+
 	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/ebitenutil"
-	"github.com/mortim-portim/WorldEditor/mathwe"
+)
+
+const (
+	screenWidth  = 1600
+	screenHeight = 900
 )
 
 type window struct {
-	zoom   float64
-	matrix *mathwe.Matrix
-	images []ebiten.Image
+	btn              *GE.Button
+	scrollbar        *GE.ScrollBar
+	label            *GE.EditText
+	pictures         *GE.Button
+	wrld             *GE.WorldPainter
+	idxMat, layerMat *GE.Matrix
+
+	frame      int
+	imgButtons []*GE.Button
 }
 
-const screenwidth = 960
-const screenheight = 520
-const width = 10
-const height = 5
-const pixelwidth = 16
+func (g *window) Update(screen *ebiten.Image) error {
+	screen.Fill(color.RGBA{0x00, 0xA0, 0x00, 0xff})
+	g.frame++
 
-func (w *window) Update(screen *ebiten.Image) error {
-	//input
-	_, dy := ebiten.Wheel()
-	w.zoom += dy / 5
+	g.scrollbar.Update(g.frame)
+	g.label.Update(g.frame)
 
-	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-		ix, iy := ebiten.CursorPosition()
-		x := math.Floor(float64(ix) / w.zoom / pixelwidth)
-		y := math.Floor(float64(iy) / w.zoom / pixelwidth)
+	g.btn.Draw(screen)
+	g.scrollbar.Draw(screen)
+	g.label.Draw(screen)
 
-		w.matrix.Set(int(x), int(y), 1, 0)
+	for _, bt := range g.imgButtons {
+		bt.Draw(screen)
 	}
 
-	//drawing
-	screen.Fill(color.NRGBA{0x00, 0xA0, 0x31, 0xff})
-
-	for x := 0; x < width; x++ {
-		if float64(x*16)*w.zoom > float64(screenwidth)/3.0*2.0 {
-			continue
-		}
-
-		for y := 0; y < height; y++ {
-			if float64(y*16)*w.zoom > float64(screenheight)/3.0*2.0 {
-				continue
-			}
-
-			img := w.images[w.matrix.Get(x, y, 0)]
-			op := ebiten.DrawImageOptions{}
-
-			op.GeoM.Scale(w.zoom, w.zoom)
-			op.GeoM.Translate(float64(x*16)*w.zoom, float64(y*16)*w.zoom)
-
-			screen.DrawImage(&img, &op)
-		}
-	}
+	g.wrld.Paint(screen, g.idxMat, g.layerMat, 0)
 	return nil
 }
 
-func (w *window) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return outsideWidth, outsideHeight
+func (g *window) Layout(outsideWidth, outsideHeight int) (int, int) {
+	return screenWidth, screenHeight
 }
 
-//Main funciton
 func main() {
-	path := []string{
-		"./resource/16.png",
-	}
+	GE.Init("./resource/VT323.ttf")
 
-	images := []ebiten.Image{}
+	mat := &GE.Matrix{X: 3, Y: 3, Z: 3}
+	mat.InitIdx()
 
-	for p := range path {
-		image, _, _ := ebitenutil.NewImageFromFile(path[p], ebiten.FilterDefault)
-		images = append(images, *image)
-	}
+	btn := GE.GetTextButton("Edit", "Edasdit", GE.StandardFont, 1000, 50, 60, &color.RGBA{255, 0, 0, 255}, &color.RGBA{0, 0, 255, 255})
 
-	matrix := mathwe.Matrix{X: width, Y: height, Z: 1}
-	matrix.Init(0)
+	scrollbar := GE.GetStandardScrollbar(1000, 200, 300, 60, 0, 3, 0, GE.StandardFont)
+	label := GE.GetEditText("Path", 1000, 400, 60, 20, GE.StandardFont, color.RGBA{255, 120, 20, 255}, GE.EditText_Selected_Col)
 
-	window := &window{zoom: 4, matrix: &matrix, images: images}
+	fmt.Println(label.ImageObj.Img)
 
-	ebiten.SetWindowSize(screenwidth, screenheight)
-	if err := ebiten.RunGame(window); err != nil {
-		panic(err)
+	wmatI := &GE.Matrix{X: 10, Y: 9, Z: 1}
+	wmatI.Init(0)
+	wmatL := &GE.Matrix{X: 10, Y: 9, Z: 1}
+	wmatL.Init(0)
+
+	wrld := GE.GetWorldPainter(0, 50, 500, 500, wmatI.X, wmatI.Y)
+	wrld.GetFrame(2, 90)
+
+	rect, _ := ebiten.NewImage(16, 16, ebiten.FilterDefault)
+	rect.Fill(color.Black)
+	wrld.AddTile(&WObjs.Tile{rect})
+
+	w := &window{btn: btn, scrollbar: scrollbar, label: label, wrld: wrld, idxMat: wmatI, layerMat: wmatL}
+
+	label.RegisterOnChange(func(t *GE.EditText) {
+		img := GE.LoadEbitenImg(label.GetText())
+		wrld.AddTile(&WObjs.Tile{img})
+		button := GE.GetImageButton(img, float64(1000+(len(w.imgButtons)%5)*64), 500+(math.Ceil(float64(len(w.imgButtons)/5)))*64, 64, 64)
+		w.imgButtons = append(w.imgButtons, button)
+	})
+
+	ebiten.SetWindowSize(screenWidth, screenHeight)
+	ebiten.SetWindowTitle("GameEngine Test")
+	if err := ebiten.RunGame(w); err != nil {
+		log.Fatal(err)
 	}
 }
