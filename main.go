@@ -1,13 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"image/color"
 	"log"
 	"math"
 
 	"marvin/GraphEng/GE"
-	"marvin/GraphEng/GE/WObjs"
 
 	"github.com/hajimehoshi/ebiten"
 )
@@ -22,7 +20,7 @@ type window struct {
 	scrollbar        *GE.ScrollBar
 	label            *GE.EditText
 	pictures         *GE.Button
-	wrld             *GE.WorldPainter
+	wrld             *GE.WorldStructure
 	idxMat, layerMat *GE.Matrix
 
 	frame      int
@@ -44,7 +42,9 @@ func (g *window) Update(screen *ebiten.Image) error {
 		bt.Draw(screen)
 	}
 
-	g.wrld.Paint(screen, g.idxMat, g.layerMat, 0)
+	g.wrld.IdxMat = g.idxMat
+	g.wrld.LayerMat = g.layerMat
+	g.wrld.Draw(screen, 0)
 	return nil
 }
 
@@ -61,27 +61,25 @@ func main() {
 	btn := GE.GetTextButton("Edit", "Edasdit", GE.StandardFont, 1000, 50, 60, &color.RGBA{255, 0, 0, 255}, &color.RGBA{0, 0, 255, 255})
 
 	scrollbar := GE.GetStandardScrollbar(1000, 200, 300, 60, 0, 3, 0, GE.StandardFont)
-	label := GE.GetEditText("Path", 1000, 400, 60, 20, GE.StandardFont, color.RGBA{255, 120, 20, 255}, GE.EditText_Selected_Col)
-
-	fmt.Println(label.ImageObj.Img)
+	label := GE.GetEditText("Path", 1000, 400, 60, 25, GE.StandardFont, color.RGBA{255, 120, 20, 255}, GE.EditText_Selected_Col)
 
 	wmatI := &GE.Matrix{X: 10, Y: 9, Z: 1}
 	wmatI.Init(0)
 	wmatL := &GE.Matrix{X: 10, Y: 9, Z: 1}
 	wmatL.Init(0)
 
-	wrld := GE.GetWorldPainter(0, 50, 500, 500, wmatI.X, wmatI.Y)
+	wrld := GE.GetWorldStructure(0, 50, 500, 500, wmatI.X, wmatI.Y)
 	wrld.GetFrame(2, 90)
 
 	rect, _ := ebiten.NewImage(16, 16, ebiten.FilterDefault)
 	rect.Fill(color.Black)
-	wrld.AddTile(&WObjs.Tile{rect})
+	wrld.AddTile(&GE.Tile{rect})
 
 	w := &window{btn: btn, scrollbar: scrollbar, label: label, wrld: wrld, idxMat: wmatI, layerMat: wmatL}
 
 	label.RegisterOnChange(func(t *GE.EditText) {
 		img := GE.LoadEbitenImg(label.GetText())
-		wrld.AddTile(&WObjs.Tile{img})
+		wrld.AddTile(&GE.Tile{img})
 		button := GE.GetImageButton(img, float64(1000+(len(w.imgButtons)%5)*64), 500+(math.Ceil(float64(len(w.imgButtons)/5)))*64, 64, 64)
 		w.imgButtons = append(w.imgButtons, button)
 	})
