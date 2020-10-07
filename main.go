@@ -87,12 +87,17 @@ func main() {
 	w := &window{btn: btn, scrollbar: scrollbar, label: label, wrld: wrld, idxMat: wmatI, layerMat: wmatL}
 
 	label.RegisterOnChange(func(t *GE.EditText) {
-		img, _ := GE.LoadEbitenImg(label.GetText())
+		img, error := GE.LoadEbitenImg(label.GetText())
+
+		if error != nil {
+			return
+		}
+
 		wrld.AddTile(&GE.Tile{img})
 		button := GE.GetImageButton(img, float64(1000+(len(w.imgButtons)%5)*64), 500+(math.Ceil(float64(len(w.imgButtons)/5)))*64, 64, 64)
 		button.RegisterOnLeftEvent(func(b *GE.Button) {
+			fmt.Print("h")
 			w.curImg = len(w.imgButtons)
-			fmt.Println(len(w.imgButtons))
 		})
 		w.imgButtons = append(w.imgButtons, button)
 	})
