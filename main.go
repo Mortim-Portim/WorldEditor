@@ -25,9 +25,9 @@ type window struct {
 	wrld      *GE.WorldStructure
 	tileMat   *GE.Matrix
 
-	frame      int
-	curImg     int
-	imgButtons []*GE.Button
+	frame, curImg  int
+	tilecollection []*TileCollection
+	imgButtons     []*GE.Button
 }
 
 func (g *window) Update(screen *ebiten.Image) error {
@@ -41,7 +41,7 @@ func (g *window) Update(screen *ebiten.Image) error {
 		y := int(math.Floor((float64(dy) - wy) / 50.0))
 
 		if x >= 0 && x < g.tileMat.W() && y >= 0 && y < g.tileMat.H() {
-			g.tileMat.Set(x, y, int16(g.curImg+1))
+			g.tileMat.Set(x, y, int16(g.tilecollection[g.curImg].randNum()))
 		}
 	}
 
@@ -97,6 +97,12 @@ func main() {
 
 	label.RegisterOnChange(func(t *GE.EditText) {
 		imgs, _ := GE.ReadTiles(label.GetText())
+
+		if len(w.tilecollection) == 0 {
+			w.tilecollection = append(w.tilecollection, &TileCollection{1, len(imgs)})
+		} else {
+			w.tilecollection = append(w.tilecollection, &TileCollection{w.tilecollection[len(w.tilecollection)].start + w.tilecollection[len(w.tilecollection)].rang, len(imgs)})
+		}
 
 		for _, img := range imgs {
 			wrld.AddTile(img)
