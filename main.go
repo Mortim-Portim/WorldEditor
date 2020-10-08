@@ -23,7 +23,7 @@ type window struct {
 	label     *GE.EditText
 	pictures  *GE.Button
 	wrld      *GE.WorldStructure
-	idxMat    *GE.Matrix
+	tileMat   *GE.Matrix
 
 	frame      int
 	curImg     int
@@ -40,8 +40,8 @@ func (g *window) Update(screen *ebiten.Image) error {
 		x := int(math.Floor((float64(dx) - wx) / 50.0))
 		y := int(math.Floor((float64(dy) - wy) / 50.0))
 
-		if x >= 0 && x < g.idxMat.W() && y >= 0 && y < g.idxMat.H() {
-			g.idxMat.Set(x, y, int16(g.curImg+1))
+		if x >= 0 && x < g.tileMat.W() && y >= 0 && y < g.tileMat.H() {
+			g.tileMat.Set(x, y, int16(g.curImg+1))
 		}
 	}
 
@@ -61,7 +61,7 @@ func (g *window) Update(screen *ebiten.Image) error {
 		bt.Draw(screen)
 	}
 
-	g.wrld.TileMat = g.idxMat
+	g.wrld.TileMat = g.tileMat
 	g.wrld.DrawBack(screen)
 	g.wrld.DrawFront(screen)
 	return nil
@@ -93,7 +93,7 @@ func main() {
 	rect.Fill(color.Black)
 	wrld.AddTile(&GE.Tile{GE.CreateDayNightImg(rect, 16, 16, 1, 1, 0), "black"})
 
-	w := &window{btn: btn, scrollbar: scrollbar, label: label, wrld: wrld, idxMat: tileMat}
+	w := &window{btn: btn, scrollbar: scrollbar, label: label, wrld: wrld, tileMat: tileMat}
 
 	label.RegisterOnChange(func(t *GE.EditText) {
 		imgs, _ := GE.ReadTiles(label.GetText())
@@ -103,7 +103,7 @@ func main() {
 		}
 
 		btimg, _ := ebiten.NewImage(16, 16, ebiten.FilterDefault)
-		imgs[0].Img.Draw(btimg, 255)
+		imgs[0].Img.Draw(btimg, 1)
 
 		button := GE.GetImageButton(btimg, float64(1000+(len(w.imgButtons)%5)*64), 500+(math.Ceil(float64(len(w.imgButtons)/5)))*64, 64, 64)
 		button.RegisterOnLeftEvent(func(b *GE.Button) {
