@@ -9,6 +9,7 @@ import (
 	"marvin/GraphEng/GE"
 
 	"github.com/hajimehoshi/ebiten"
+	"github.com/mortim-portim/WorldEditor/util"
 )
 
 const (
@@ -17,12 +18,12 @@ const (
 )
 
 type window struct {
-	btn              *GE.Button
-	scrollbar        *GE.ScrollBar
-	label            *GE.EditText
-	pictures         *GE.Button
-	wrld             *GE.WorldStructure
-	idxMat, layerMat *GE.Matrix
+	btn       *GE.Button
+	scrollbar *GE.ScrollBar
+	label     *GE.EditText
+	pictures  *GE.Button
+	wrld      *GE.WorldStructure
+	idxMat    *GE.Matrix
 
 	frame      int
 	curImg     int
@@ -35,18 +36,22 @@ func (g *window) Update(screen *ebiten.Image) error {
 
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 		dx, dy := ebiten.CursorPosition()
+		wx, wy := g.wrld.GetTopLeft()
+		x := int(math.Floor((float64(dx) - wx) / 50.0))
+		y := int(math.Floor((float64(dy) - wy) / 50.0))
 
-		x := int16(math.Floor((float64(dx) - g.wrld.GetTopLeft().X) / 50.0))
-		y := int16(math.Floor((float64(dy) - g.wrld.GetTopLeft().Y) / 50.0))
-
-		if x >= 0 && x < g.wrld.IdxMat.W() && y >= 0 && y < g.wrld.IdxMat.H() {
-			g.idxMat.Set(int16(x), int16(y), 1)
-			g.layerMat.Set(x, y, int16(g.scrollbar.Current()))
+		if x >= 0 && x < g.idxMat.W() && y >= 0 && y < g.idxMat.H() {
+			g.idxMat.Set(x, y, int16(g.curImg+1))
 		}
 	}
 
+	g.btn.Update(g.frame)
 	g.scrollbar.Update(g.frame)
 	g.label.Update(g.frame)
+
+	for _, bt := range g.imgButtons {
+		bt.Update(g.frame)
+	}
 
 	g.btn.Draw(screen)
 	g.scrollbar.Draw(screen)
@@ -56,9 +61,9 @@ func (g *window) Update(screen *ebiten.Image) error {
 		bt.Draw(screen)
 	}
 
-	g.wrld.IdxMat = g.idxMat
-	g.wrld.LayerMat = g.layerMat
-	g.wrld.Draw(screen)
+	g.wrld.TileMat = g.idxMat
+	g.wrld.DrawBack(screen)
+	g.wrld.DrawFront(screen)
 	return nil
 }
 
@@ -74,30 +79,36 @@ func main() {
 	scrollbar := GE.GetStandardScrollbar(1000, 200, 300, 60, 0, 3, 0, GE.StandardFont)
 	label := GE.GetEditText("Path", 1000, 400, 60, 25, GE.StandardFont, color.RGBA{255, 120, 20, 255}, GE.EditText_Selected_Col)
 
-	wmatI := GE.GetMatrix(10, 10, 0)
-	wmatL := GE.GetMatrix(10, 10, 0)
+	tileMat := GE.GetMatrix(10, 10, 0)
+	lightMat := GE.GetMatrix(10, 10, 255)
+	objMat := GE.GetMatrix(0, 0, 0)
 
-	wrld := GE.GetWorldStructure(0, 50, 500, 500, wmatI.W(), wmatI.H())
+	wrld := GE.GetWorldStructure(0, 50, 500, 500, tileMat.W(), tileMat.H())
+	wrld.TileMat = tileMat
+	wrld.LightMat = lightMat
+	wrld.ObjMat = objMat
 	wrld.GetFrame(2, 90)
 
-	rect, _ := ebiten.NewImage(16, 16, ebiten.FilterDefault)
+	rect, _ := ebiten.NewImage(16, 32, ebiten.FilterDefault)
 	rect.Fill(color.Black)
-	wrld.AddTile(&GE.Tile{rect})
+	wrld.AddTile(&GE.Tile{GE.CreateDayNightImg(rect, 16, 16, 1, 1, 0), "black"})
 
-	w := &window{btn: btn, scrollbar: scrollbar, label: label, wrld: wrld, idxMat: wmatI, layerMat: wmatL}
+	w := &window{btn: btn, scrollbar: scrollbar, label: label, wrld: wrld, idxMat: tileMat}
 
 	label.RegisterOnChange(func(t *GE.EditText) {
-		img, error := GE.LoadEbitenImg(label.GetText())
+		imgs, _ := GE.ReadTiles(label.GetText())
 
-		if error != nil {
-			return
+		for _, img := range imgs {
+			wrld.AddTile(img)
 		}
 
-		wrld.AddTile(&GE.Tile{img})
-		button := GE.GetImageButton(img, float64(1000+(len(w.imgButtons)%5)*64), 500+(math.Ceil(float64(len(w.imgButtons)/5)))*64, 64, 64)
+		btimg, _ := ebiten.NewImage(16, 16, ebiten.FilterDefault)
+		imgs[0].Img.Draw(btimg, 255)
+
+		button := GE.GetImageButton(btimg, float64(1000+(len(w.imgButtons)%5)*64), 500+(math.Ceil(float64(len(w.imgButtons)/5)))*64, 64, 64)
 		button.RegisterOnLeftEvent(func(b *GE.Button) {
-			fmt.Print("h")
-			w.curImg = len(w.imgButtons)
+			w.curImg = util.IndexOf(w.imgButtons, b)
+			fmt.Print(w.curImg)
 		})
 		w.imgButtons = append(w.imgButtons, button)
 	})
