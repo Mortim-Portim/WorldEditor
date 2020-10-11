@@ -25,13 +25,13 @@ func main() {
 
 	wrld := GE.GetWorldStructure(20, 40, 900, 800, 18, 16)
 	wrld.TileMat = tileMat
-	wrld.LightIdxMat = lightidxMat
+	wrld.CurrentLightMat = lightidxMat
 	wrld.UpdateObjMat()
 	wrld.SetMiddle(0, 0)
 
 	rect, _ := ebiten.NewImage(16, 32, ebiten.FilterDefault)
 	rect.Fill(color.Black)
-	wrld.AddTile(&GE.Tile{GE.CreateDayNightImg(rect, 16, 16, 1, 1, 0), "black"})
+	wrld.AddTile(&GE.Tile{Img: GE.CreateDayNightImg(rect, 16, 16, 1, 1, 0), Name: "black"})
 
 	window := &window{wrld: wrld, tileMat: tileMat}
 

@@ -25,8 +25,8 @@ func (g *window) Update(screen *ebiten.Image) error {
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 		dx, dy := ebiten.CursorPosition()
 		wx, wy := g.wrld.GetTopLeft()
-		x := int(math.Floor((float64(dx) - wx) / (g.wrld.W / g.wrld.TileMat.Focus().Bounds().X)))
-		y := int(math.Floor((float64(dy) - wy) / (g.wrld.H / g.wrld.TileMat.Focus().Bounds().Y)))
+		x := int(math.Floor((float64(dx) - wx) / g.wrld.GetTileS()))
+		y := int(math.Floor((float64(dy) - wy) / g.wrld.GetTileS()))
 
 		if x >= 0 && x < g.tileMat.W() && y >= 0 && y < g.tileMat.H() {
 			if g.useSub {
@@ -51,6 +51,16 @@ func (g *window) Update(screen *ebiten.Image) error {
 
 	if ebiten.IsKeyPressed(ebiten.KeyDown) {
 		g.wrld.Move(0, 1)
+	}
+
+	_, y := ebiten.Wheel()
+
+	if y < 0 {
+		g.wrld.SetDisplayWH(g.wrld.TileMat.W()+1, g.wrld.TileMat.H()+1)
+	}
+
+	if y > 0 {
+		g.wrld.SetDisplayWH(g.wrld.TileMat.W()-1, g.wrld.TileMat.H()-1)
 	}
 
 	g.wrld.TileMat = g.tileMat
