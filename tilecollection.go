@@ -6,7 +6,7 @@ import (
 
 type TileCollection interface {
 	GetString() string
-	GetNum() int
+	GetNum() int16
 	GetLast() int
 	GetStart() int
 	GetRange() int
@@ -21,8 +21,8 @@ func (tc *RandomTC) GetString() string {
 	return tc.name
 }
 
-func (tc *RandomTC) GetNum() int {
-	return rand.Intn(tc.rang) + tc.start
+func (tc *RandomTC) GetNum() int16 {
+	return int16(rand.Intn(tc.rang) + tc.start)
 }
 
 func (tc *RandomTC) GetLast() int {
@@ -46,8 +46,8 @@ func (tc *ConnectedTC) GetString() string {
 	return tc.name
 }
 
-func (tc *ConnectedTC) GetNum() int {
-	return tc.start
+func (tc *ConnectedTC) GetNum() int16 {
+	return int16(tc.start)
 }
 
 func (tc *ConnectedTC) GetLast() int {
