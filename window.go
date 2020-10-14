@@ -3,99 +3,117 @@ package main
 import (
 	"image/color"
 	"marvin/GraphEng/GE"
-	"math"
 
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/inpututil"
 )
 
-type window struct {
+type Window struct {
 	wrld    *GE.WorldStructure
-	tileMat *GE.Matrix
-	buttons []*GE.Button
+	objects *GE.Group
 
-	frame, curImg  int
+	frame, curType int
+
+	//Tile
 	useSub         bool
+	selectedVar    int
 	tilecollection []TileCollection
-	subButtons     []*GE.Button
+	tilebuttons    *GE.Group
+	tilesubbuttons *GE.Group
+
+	//Object
+	currentObject *GE.Structure
+	objectbuttons *GE.Group
 }
 
-func (g *window) Update(screen *ebiten.Image) error {
-	g.frame++
+func (w *Window) Update(screen *ebiten.Image) error {
+	w.frame++
 
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-		dx, dy := ebiten.CursorPosition()
-		wx, wy := g.wrld.GetTopLeft()
-		x := int(math.Floor((float64(dx) - wx) / g.wrld.GetTileS()))
-		y := int(math.Floor((float64(dy) - wy) / g.wrld.GetTileS()))
+		mousebuttonleftPressed(w)
+	}
 
-		if x >= 0 && x < g.tileMat.W() && y >= 0 && y < g.tileMat.H() {
-			if g.useSub {
-				g.tileMat.Set(x, y, int16(g.curImg))
-			} else {
-				g.tileMat.Set(x, y, g.tilecollection[g.curImg].GetNum())
-			}
-		}
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		mousebuttonleftJustPressed(w)
+	}
+
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
+		mousebuttonrightJustPressed(w)
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
-		g.wrld.Move(-1, 0)
+		w.wrld.Move(-1, 0)
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyRight) {
-		g.wrld.Move(1, 0)
+		w.wrld.Move(1, 0)
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyUp) {
-		g.wrld.Move(0, -1)
+		w.wrld.Move(0, -1)
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyDown) {
-		g.wrld.Move(0, 1)
+		w.wrld.Move(0, 1)
 	}
 
 	_, y := ebiten.Wheel()
 
 	if y < 0 {
-		g.wrld.SetDisplayWH(g.wrld.TileMat.W()+1, g.wrld.TileMat.H()+1)
+		w.wrld.SetDisplayWH(w.wrld.TileMat.W()+1, w.wrld.TileMat.H()+1)
 	}
 
 	if y > 0 {
-		g.wrld.SetDisplayWH(g.wrld.TileMat.W()-1, g.wrld.TileMat.H()-1)
+		w.wrld.SetDisplayWH(w.wrld.TileMat.W()-1, w.wrld.TileMat.H()-1)
 	}
 
-	g.wrld.TileMat = g.tileMat
-
-	g.update()
-	g.draw(screen)
+	w.update()
+	w.draw(screen)
 
 	return nil
 }
 
-func (g *window) update() {
-	for _, bt := range g.buttons {
-		bt.Update(g.frame)
-	}
+func (g *Window) update() {
+	g.objects.Update(g.frame)
 
-	for _, bt := range g.subButtons {
-		bt.Update(g.frame)
+	switch g.curType {
+	case 0:
+		g.tilebuttons.Update(g.frame)
+		g.tilesubbuttons.Update(g.frame)
+	case 1:
+		g.objectbuttons.Update(g.frame)
 	}
 }
 
-func (g *window) draw(screen *ebiten.Image) {
+func (g *Window) draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{0x00, 0xA0, 0x00, 0xff})
-
-	for _, bt := range g.buttons {
-		bt.Draw(screen)
-	}
-
-	for _, bt := range g.subButtons {
-		bt.Draw(screen)
-	}
-
+	g.objects.Draw(screen)
+	g.wrld.DrawLights(false)
 	g.wrld.DrawBack(screen)
-	//g.wrld.DrawFront(screen)
+
+	switch g.curType {
+	case 0:
+		g.tilebuttons.Draw(screen)
+		g.tilesubbuttons.Draw(screen)
+	case 1:
+		g.objectbuttons.Draw(screen)
+	}
 }
 
-func (g *window) Layout(outsideWidth, outsideHeight int) (int, int) {
+func (g *Window) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return screenWidth, screenHeight
+}
+
+func getWindow(wrld *GE.WorldStructure) (window *Window) {
+	window = &Window{wrld: wrld, objects: GE.GetGroup(), tilebuttons: GE.GetGroup(), tilesubbuttons: GE.GetGroup(), objectbuttons: GE.GetGroup()}
+
+	lightbar := getLightlevelScrollbar(1000, 50, 500, 30, window)
+	tilebutton := getTabButton(1000, 300, 50, 0, "Tile", window)
+	objbutton := getTabButton(1200, 300, 50, 1, "Objects", window)
+	window.objects.Add(lightbar, tilebutton, objbutton)
+
+	autobutton := getAutocompleteButton(1000, 400, 50, window)
+	fillbutton := getFillButton(1300, 400, 50, window)
+	window.tilebuttons.Add(autobutton, fillbutton)
+	return
 }

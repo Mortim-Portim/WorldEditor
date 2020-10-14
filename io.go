@@ -6,11 +6,9 @@ import (
 	"marvin/GraphEng/GE"
 	"math"
 	"strings"
-
-	"github.com/hajimehoshi/ebiten"
 )
 
-func readTileCollection(path string, wrld *GE.WorldStructure, window *window) {
+func readTileCollection(path string, window *Window) {
 	files, err := ioutil.ReadDir(path)
 
 	if err != nil {
@@ -19,9 +17,9 @@ func readTileCollection(path string, wrld *GE.WorldStructure, window *window) {
 	}
 
 	for i, file := range files {
-		imgs, _ := GE.ReadTiles(resourcefile + file.Name() + "/")
+		tiles, _ := GE.ReadTiles(resourcefile + file.Name() + "/")
+		subbuttons := GE.GetGroup()
 
-		var tilecollection TileCollection
 		var lastnum int
 
 		if len(window.tilecollection) == 0 {
@@ -30,58 +28,72 @@ func readTileCollection(path string, wrld *GE.WorldStructure, window *window) {
 			lastnum = window.tilecollection[len(window.tilecollection)-1].GetLast()
 		}
 
+		for k, tile := range tiles {
+			tile.Name = file.Name()
+			window.wrld.AddTile(tile)
+
+			btimg := tile.Img.GetDay()
+			button := GE.GetImageButton(btimg, float64(1000+(k%8)*70), 700+(math.Ceil(float64(k/8)))*70, 64, 64)
+			button.Data = k + lastnum
+			button.RegisterOnLeftEvent(func(b *GE.Button) {
+				if !b.LPressed {
+					return
+				}
+
+				window.selectedVar = b.Data.(int)
+				window.useSub = true
+
+				fmt.Printf("%v", window.selectedVar)
+			})
+
+			subbuttons.Add(button)
+		}
+
+		var tilecollection TileCollection
+
 		switch strings.Split(file.Name(), "-")[1] {
 		case "r":
-			tilecollection = &RandomTC{file.Name(), lastnum, len(imgs)}
+			tilecollection = &RandomTC{DefaultTC{file.Name(), lastnum, len(tiles), subbuttons}}
 		case "c":
-			tilecollection = &ConnectedTC{file.Name(), lastnum, len(imgs)}
+			tilecollection = &ConnectedTC{DefaultTC{file.Name(), lastnum, len(tiles), subbuttons}}
 		default:
 			fmt.Println(file.Name() + " does not have a correct ending")
 			continue
 		}
 
-		for _, tile := range imgs {
-			tile.Name = file.Name()
-		}
-
 		window.tilecollection = append(window.tilecollection, tilecollection)
 
-		for _, img := range imgs {
-			wrld.AddTile(img)
-		}
+		btimg := tiles[0].Img.GetDay()
 
-		btimg, _ := ebiten.NewImage(16, 16, ebiten.FilterDefault)
-		imgs[0].Img.Draw(btimg, 1)
-
-		button := GE.GetImageButton(btimg, float64(1000+(i%9)*64), 500+(math.Ceil(float64(i/9)))*64, 64, 64)
+		button := GE.GetImageButton(btimg, float64(1000+(i%8)*70), 500+(math.Ceil(float64(i/8)))*70, 64, 64)
 		button.Data = i
 		button.RegisterOnLeftEvent(func(b *GE.Button) {
 			if !b.LPressed {
 				return
 			}
-			window.curImg = b.Data.(int)
+			window.selectedVar = b.Data.(int)
 			window.useSub = false
-			setSubBtn(window, wrld, window.tilecollection[window.curImg])
+			window.tilesubbuttons = window.tilecollection[b.Data.(int)].GetSubButtons()
 		})
-		window.buttons = append(window.buttons, button)
+
+		window.tilebuttons.Add(button)
 	}
 }
 
-func setSubBtn(window *window, wrld *GE.WorldStructure, tc TileCollection) {
-	window.subButtons = nil
+func readObjects(path string, window *Window) {
+	objects, _ := GE.ReadStructures(path)
 
-	for i := tc.GetStart(); i < tc.GetLast(); i++ {
-		btimg := wrld.Tiles[i].Img.GetDay()
-		button := GE.GetImageButton(btimg, float64(1000+(len(window.subButtons)%9)*64), 700+(math.Ceil(float64(len(window.subButtons)/9)))*64, 64, 64)
-		button.Data = i
-		button.RegisterOnLeftEvent(func(b *GE.Button) {
-			if !b.LPressed {
-				return
-			}
+	for i, object := range objects {
+		btnImg := object.GetDay()
+		button := GE.GetImageButton(btnImg, float64(1000+(i%8)*70), 500+(math.Ceil(float64(i/8)))*70, 64, 64)
 
-			window.curImg = b.Data.(int)
-			window.useSub = true
+		button.Data = object
+		button.RegisterOnLeftEvent(func(btn *GE.Button) {
+			window.currentObject = button.Data.(*GE.Structure)
 		})
-		window.subButtons = append(window.subButtons, button)
+
+		window.objectbuttons.Add(button)
+
+		window.wrld.AddStruct(object)
 	}
 }
