@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"marvin/GraphEng/GE"
 	"math"
 
@@ -59,8 +58,6 @@ func mousebuttonleftJustPressed(w *Window) {
 			structObj := GE.GetStructureObj(w.currentObject, float64(x)+w.wrld.TileMat.Focus().Min().X, float64(y)+w.wrld.TileMat.Focus().Min().Y)
 			w.wrld.AddStructObj(structObj)
 			w.wrld.UpdateObjMat()
-
-			fmt.Println(w.wrld.ObjMat.Print())
 		}
 	}
 }

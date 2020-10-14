@@ -24,6 +24,9 @@ type Window struct {
 	//Object
 	currentObject *GE.Structure
 	objectbuttons *GE.Group
+
+	//Light
+
 }
 
 func (w *Window) Update(screen *ebiten.Image) error {
@@ -88,7 +91,7 @@ func (g *Window) update() {
 func (g *Window) draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{0x00, 0xA0, 0x00, 0xff})
 	g.objects.Draw(screen)
-	g.wrld.DrawLights(false)
+	g.wrld.DrawLights(true)
 	g.wrld.DrawBack(screen)
 
 	switch g.curType {
@@ -108,9 +111,12 @@ func getWindow(wrld *GE.WorldStructure) (window *Window) {
 	window = &Window{wrld: wrld, objects: GE.GetGroup(), tilebuttons: GE.GetGroup(), tilesubbuttons: GE.GetGroup(), objectbuttons: GE.GetGroup()}
 
 	lightbar := getLightlevelScrollbar(1000, 50, 500, 30, window)
+	pathlabel := getPathLabel(1000, 120, 50, 25)
+	importbutton := getImportButton(1000, 200, 50, "Import", window, pathlabel)
+	exportbutton := getExportButton(1200, 200, 50, "Export", window, pathlabel)
 	tilebutton := getTabButton(1000, 300, 50, 0, "Tile", window)
 	objbutton := getTabButton(1200, 300, 50, 1, "Objects", window)
-	window.objects.Add(lightbar, tilebutton, objbutton)
+	window.objects.Add(lightbar, pathlabel, importbutton, exportbutton, tilebutton, objbutton)
 
 	autobutton := getAutocompleteButton(1000, 400, 50, window)
 	fillbutton := getFillButton(1300, 400, 50, window)

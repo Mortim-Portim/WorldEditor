@@ -94,17 +94,32 @@ func getTabButton(x, y, h float64, id int, name string, window *Window) (btn *GE
 	return
 }
 
-func getPathLabel() (lbl *GE.EditText) {
-	//GE.GetEditText("Path", x, y, h, max, GE.StandardFont)
+func getPathLabel(x, y, h float64, max int) (lbl *GE.EditText) {
+	lbl = GE.GetEditText("Path", x, y, h, max, GE.StandardFont, color.Black, color.White)
 	return
 }
 
-func getImportButton(x, y, h float64, id int, name string, window *Window) (btn *GE.Button) {
+func getImportButton(x, y, h float64, name string, window *Window, input *GE.EditText) (btn *GE.Button) {
 	btn = GE.GetTextButton(name, "", GE.StandardFont, x, y, h, color.Black, color.White)
+	btn.RegisterOnLeftEvent(func(btn *GE.Button) {
+		if !btn.LPressed {
+			return
+		}
+
+		nwrld, _ := GE.LoadWorldStructure(20, 40, 900, 800, "./resource/maps/"+input.GetText()+".map", "./resource/tiles", "./resource/objects")
+		window.wrld = nwrld
+	})
 	return
 }
 
-func getExportButton(x, y, h float64, id int, name string, window *Window) (btn *GE.Button) {
+func getExportButton(x, y, h float64, name string, window *Window, input *GE.EditText) (btn *GE.Button) {
 	btn = GE.GetTextButton(name, "", GE.StandardFont, x, y, h, color.Black, color.White)
+	btn.RegisterOnLeftEvent(func(btn *GE.Button) {
+		if !btn.LPressed {
+			return
+		}
+
+		window.wrld.Save("./resource/maps/" + input.GetText() + ".map")
+	})
 	return
 }
