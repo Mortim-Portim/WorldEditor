@@ -5,7 +5,6 @@ import (
 	"marvin/GraphEng/GE"
 
 	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/inpututil"
 )
 
 type Window struct {
@@ -20,13 +19,14 @@ type Window struct {
 	tilecollection []TileCollection
 	tilebuttons    *GE.Group
 	tilesubbuttons *GE.Group
+	importedTiles  []string
 
 	//Object
 	currentObject *GE.Structure
 	objectbuttons *GE.Group
 
 	//Light
-
+	lightbuttons *GE.Group
 }
 
 func (w *Window) Update(screen *ebiten.Image) error {
@@ -36,12 +36,8 @@ func (w *Window) Update(screen *ebiten.Image) error {
 		mousebuttonleftPressed(w)
 	}
 
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-		mousebuttonleftJustPressed(w)
-	}
-
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonRight) {
-		mousebuttonrightJustPressed(w)
+	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonRight) {
+		mousebuttonrightPressed(w)
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
@@ -116,10 +112,12 @@ func getWindow(wrld *GE.WorldStructure) (window *Window) {
 	exportbutton := getExportButton(1200, 200, 50, "Export", window, pathlabel)
 	tilebutton := getTabButton(1000, 300, 50, 0, "Tile", window)
 	objbutton := getTabButton(1200, 300, 50, 1, "Objects", window)
-	window.objects.Add(lightbar, pathlabel, importbutton, exportbutton, tilebutton, objbutton)
+	lightbutton := getTabButton(1400, 300, 50, 2, "Light", window)
+	window.objects.Add(lightbar, pathlabel, importbutton, exportbutton, tilebutton, objbutton, lightbutton)
 
 	autobutton := getAutocompleteButton(1000, 400, 50, window)
 	fillbutton := getFillButton(1300, 400, 50, window)
 	window.tilebuttons.Add(autobutton, fillbutton)
+
 	return
 }

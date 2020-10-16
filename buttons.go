@@ -2,7 +2,10 @@ package main
 
 import (
 	"image/color"
+	"io/ioutil"
+	"marvin/GraphEng/Compression"
 	"marvin/GraphEng/GE"
+	"os"
 )
 
 func getAutocompleteButton(x, y, h float64, window *Window) (btn *GE.Button) {
@@ -106,8 +109,30 @@ func getImportButton(x, y, h float64, name string, window *Window, input *GE.Edi
 			return
 		}
 
-		nwrld, _ := GE.LoadWorldStructure(20, 40, 900, 800, "./resource/maps/"+input.GetText()+".map", "./resource/tiles", "./resource/objects")
-		window.wrld = nwrld
+		data, err1 := ioutil.ReadFile("./resource/maps/" + input.GetText() + ".map")
+		if err1 != nil {
+			return
+		}
+
+		bs := Compression.DecompressAll(data, []int{8, 8, 2, 2, 8})
+		tilMat := GE.GetMatrix(0, 0, 0)
+		err2 := tilMat.Decompress(bs[5])
+		if err2 != nil {
+			return
+		}
+
+		window.wrld.TileMat = tilMat
+
+		window.wrld.Objects = nil
+		window.wrld.BytesToObjects(bs[6])
+		window.wrld.UpdateObjMat()
+
+		window.wrld.Lights = nil
+		window.wrld.BytesToLights(bs[7])
+		window.wrld.UpdateLIdxMat()
+
+		window.wrld.SetMiddle(int(Compression.BytesToInt64(bs[0])), int(Compression.BytesToInt64(bs[1])))
+		window.wrld.SetLightStats(Compression.BytesToInt16(bs[2]), Compression.BytesToInt16(bs[3]), Compression.BytesToFloat64(bs[4]))
 	})
 	return
 }
@@ -120,6 +145,12 @@ func getExportButton(x, y, h float64, name string, window *Window, input *GE.Edi
 		}
 
 		window.wrld.Save("./resource/maps/" + input.GetText() + ".map")
+
+		file, _ := os.Create("./resource/maps/" + input.GetText() + ".index")
+
+		for _, line := range window.importedTiles {
+			file.WriteString(line + "\n")
+		}
 	})
 	return
 }
