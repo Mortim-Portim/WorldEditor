@@ -10,6 +10,7 @@ import (
 
 func readTileCollection(path string, window *Window) {
 	files, err := ioutil.ReadDir(path)
+	window.importedTiles = make([]string, 0)
 
 	if err != nil {
 		fmt.Println("Resource filepath is false")
@@ -17,6 +18,15 @@ func readTileCollection(path string, window *Window) {
 	}
 
 	for i, file := range files {
+		subimg, _ := ioutil.ReadDir(resourcefile + file.Name() + "/")
+
+		for _, name := range subimg {
+			split := strings.Split(name.Name(), ".")
+			if split[1] == "png" {
+				window.importedTiles = append(window.importedTiles, split[0])
+			}
+		}
+
 		tiles, _ := GE.ReadTiles(resourcefile + file.Name() + "/")
 		subbuttons := GE.GetGroup()
 

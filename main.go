@@ -25,11 +25,6 @@ func main() {
 	wrld.SetDisplayWH(18, 16)
 	wrld.SetLightStats(0, 255, 0)
 
-	light1 := GE.GetLightSource(&GE.Point{12, 8}, &GE.Vector{0, -1, 0}, 360, 0.01, 400, 0.01, false)
-
-	wrld.Lights = append(wrld.Lights, light1)
-	wrld.UpdateLIdxMat()
-
 	rect, _ := ebiten.NewImage(16, 32, ebiten.FilterDefault)
 	rect.Fill(color.Black)
 	wrld.AddTile(&GE.Tile{Img: GE.CreateDayNightImg(rect, 16, 16, 1, 1, 0), Name: "black"})
