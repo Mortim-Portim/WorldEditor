@@ -33,7 +33,7 @@ func readTileCollection(path string, window *Window) {
 		var lastnum int
 
 		if len(window.tilecollection) == 0 {
-			lastnum = 1
+			lastnum = 0
 		} else {
 			lastnum = window.tilecollection[len(window.tilecollection)-1].GetLast()
 		}

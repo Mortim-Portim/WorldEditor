@@ -1,7 +1,6 @@
 package main
 
 import (
-	"image/color"
 	"log"
 
 	"marvin/GraphEng/GE"
@@ -24,10 +23,6 @@ func main() {
 	wrld.SetMiddle(0, 0)
 	wrld.SetDisplayWH(18, 16)
 	wrld.SetLightStats(0, 255, 0)
-
-	rect, _ := ebiten.NewImage(16, 32, ebiten.FilterDefault)
-	rect.Fill(color.Black)
-	wrld.AddTile(&GE.Tile{Img: GE.CreateDayNightImg(rect, 16, 16, 1, 1, 0), Name: "black"})
 
 	window := getWindow(wrld)
 
