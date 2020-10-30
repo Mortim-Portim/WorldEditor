@@ -50,12 +50,33 @@ func (tc *RandomTC) GetNum() int16 {
 
 type ConnectedTC struct {
 	DefaultTC
+	index []uint8
 }
 
 func (tc *ConnectedTC) GetNum() int16 {
 	return int16(tc.start)
 }
 
-func (tc *ConnectedTC) GetIndex(n, w, s, e int) int {
-	return n + 2*w + 4*s + 8*e + tc.start
+func (tc *ConnectedTC) GetIndex(n, w, s, e, nw, ne, sw, se int) int {
+	idx, subIdx := 0, 0
+	surround := uint8(1*n + 2*w + 4*s + 8*e + 16*nw + 32*ne + 64*sw + 128*se)
+	redSurround := uint8(1*n + 2*w + 4*s + 8*e)
+
+	for i, num := range tc.index {
+		if num == surround {
+			idx = i
+		}
+
+		if num == redSurround {
+			subIdx = i
+		}
+	}
+
+	if idx == 0 {
+		idx = subIdx
+	}
+
+	//fmt.Printf("%v %v %v %v %v %v %v %v -> %v %v %v\n", n, w, s, e, nw, ne, sw, se, surround, redSurround, idx)
+
+	return idx + tc.start
 }

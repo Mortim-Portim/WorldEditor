@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"marvin/GraphEng/GE"
 	"math"
+	"strconv"
 	"strings"
 )
 
@@ -19,11 +20,19 @@ func readTileCollection(path string, window *Window) {
 
 	for i, file := range files {
 		subimg, _ := ioutil.ReadDir(resourcefile + file.Name() + "/")
+		index := make([]uint8, 0)
 
 		for _, name := range subimg {
 			split := strings.Split(name.Name(), ".")
 			if split[1] == "png" {
 				window.importedTiles = append(window.importedTiles, split[0])
+
+				num, err := strconv.ParseInt(split[0][len(split[0])-3:], 10, 16)
+
+				if err != nil {
+					fmt.Println(name.Name() + " last 3 have to be nums - " + err.Error())
+				}
+				index = append(index, uint8(num))
 			}
 		}
 
@@ -65,7 +74,7 @@ func readTileCollection(path string, window *Window) {
 		case "r":
 			tilecollection = &RandomTC{DefaultTC{file.Name(), lastnum, len(tiles), subbuttons}}
 		case "c":
-			tilecollection = &ConnectedTC{DefaultTC{file.Name(), lastnum, len(tiles), subbuttons}}
+			tilecollection = &ConnectedTC{DefaultTC{file.Name(), lastnum, len(tiles), subbuttons}, index}
 		default:
 			fmt.Println(file.Name() + " does not have a correct ending")
 			continue

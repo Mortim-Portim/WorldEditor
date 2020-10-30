@@ -41,19 +41,19 @@ func (w *Window) Update(screen *ebiten.Image) error {
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
-		w.wrld.Move(-1, 0)
+		w.wrld.Move(-1, 0, true, false)
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyRight) {
-		w.wrld.Move(1, 0)
+		w.wrld.Move(1, 0, true, false)
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyUp) {
-		w.wrld.Move(0, -1)
+		w.wrld.Move(0, -1, true, false)
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyDown) {
-		w.wrld.Move(0, 1)
+		w.wrld.Move(0, 1, true, false)
 	}
 
 	_, y := ebiten.Wheel()
@@ -87,8 +87,9 @@ func (g *Window) update() {
 func (g *Window) draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{0x00, 0xA0, 0x00, 0xff})
 	g.objects.Draw(screen)
-	g.wrld.DrawLights(true)
-	g.wrld.DrawBack(screen)
+	g.wrld.UpdateAllLightsIfNecassary()
+	g.wrld.UpdateObjDrawables()
+	g.wrld.Draw(screen)
 
 	switch g.curType {
 	case 0:

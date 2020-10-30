@@ -31,9 +31,7 @@ func mousebuttonleftPressed(w *Window) {
 		case 2:
 			lightID, _ := w.wrld.LIdxMat.Get(x, y)
 			if lightID == -1 {
-				light := GE.GetLightSource(&GE.Point{float64(x) + w.wrld.TileMat.Focus().Min().X, float64(y) + w.wrld.TileMat.Focus().Min().Y}, &GE.Vector{0, -1, 0}, 360, 400, 0.01, false)
-				w.wrld.Lights = append(w.wrld.Lights, light)
-				w.wrld.UpdateLIdxMat()
+				w.wrld.AddLights(GE.GetLightSource(&GE.Point{float64(x) + w.wrld.TileMat.Focus().Min().X, float64(y) + w.wrld.TileMat.Focus().Min().Y}, &GE.Vector{0, -1, 0}, 360, 400, 0.01, false))
 			}
 		}
 	}
@@ -61,7 +59,7 @@ func mousebuttonrightPressed(w *Window) {
 			if lightID >= 0 {
 				w.wrld.Lights[lightID] = w.wrld.Lights[len(w.wrld.Lights)-1]
 				w.wrld.Lights = w.wrld.Lights[:len(w.wrld.Lights)-1]
-				w.wrld.UpdateLIdxMat()
+				w.wrld.RemoveLight(int(lightID))
 			}
 		}
 	}
