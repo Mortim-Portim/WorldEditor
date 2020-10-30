@@ -39,8 +39,12 @@ func getAutocompleteButton(x, y, h float64, window *Window) (btn *GE.Button) {
 					w := getOnPos(x-1, y, tc.start, tc.rang, window.wrld.TileMat)
 					s := getOnPos(x, y+1, tc.start, tc.rang, window.wrld.TileMat)
 					e := getOnPos(x+1, y, tc.start, tc.rang, window.wrld.TileMat)
+					nw := getOnPos(x-1, y-1, tc.start, tc.rang, window.wrld.TileMat)
+					ne := getOnPos(x+1, y, tc.start, tc.rang, window.wrld.TileMat)
+					sw := getOnPos(x-1, y+1, tc.start, tc.rang, window.wrld.TileMat)
+					se := getOnPos(x+1, y+1, tc.start, tc.rang, window.wrld.TileMat)
 
-					window.wrld.TileMat.SetAbs(x, y, int16(tc.GetIndex(n, w, s, e)))
+					window.wrld.TileMat.SetAbs(x, y, int16(tc.GetIndex(n, w, s, e, ne, nw, sw, se)))
 				}
 			}
 		}
@@ -131,7 +135,7 @@ func getImportButton(x, y, h float64, name string, window *Window, input *GE.Edi
 		window.wrld.BytesToLights(bs[7])
 		window.wrld.UpdateLIdxMat()
 
-		window.wrld.SetMiddle(int(Compression.BytesToInt64(bs[0])), int(Compression.BytesToInt64(bs[1])))
+		window.wrld.SetMiddle(int(Compression.BytesToInt64(bs[0])), int(Compression.BytesToInt64(bs[1])), false)
 		window.wrld.SetLightStats(Compression.BytesToInt16(bs[2]), Compression.BytesToInt16(bs[3]), Compression.BytesToFloat64(bs[4]))
 	})
 	return
