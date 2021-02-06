@@ -1,11 +1,15 @@
 package main
 
 import (
-	"marvin/GraphEng/GE"
 	"math"
+	"strconv"
+
+	"github.com/mortim-portim/GraphEng/GE"
 
 	"github.com/hajimehoshi/ebiten"
 )
+
+//Todo: once per Tile
 
 func mousebuttonleftPressed(w *Window) {
 	dx, dy := ebiten.CursorPosition()
@@ -17,9 +21,16 @@ func mousebuttonleftPressed(w *Window) {
 		switch w.curType {
 		case 0:
 			if w.useSub {
-				w.wrld.TileMat.Set(x, y, int16(w.selectedVar))
+				w.wrld.TileMat.Set(x, y, int64(w.selectedVar))
 			} else {
-				w.wrld.TileMat.Set(x, y, w.tilecollection[w.selectedVar].GetNum())
+				brushsize := w.brushsize
+
+				w.wrld.TileMat.Fill(x-brushsize, y-brushsize, x+brushsize, y+brushsize, int64(w.tilecollection[w.selectedVar].GetStart()))
+				for dx := x - brushsize - 1; dx <= x+brushsize+1; dx++ {
+					for dy := y - brushsize - 1; dy <= y+brushsize+1; dy++ {
+						connectTiles(dx, dy, w)
+					}
+				}
 			}
 		case 1:
 			objID, _ := w.wrld.ObjMat.Get(x, y)
@@ -35,6 +46,61 @@ func mousebuttonleftPressed(w *Window) {
 			}
 		}
 	}
+}
+
+func connectTiles(x, y int, window *Window) {
+	tileID, _ := window.wrld.TileMat.Get(x, y)
+	tileName := window.wrld.Tiles[tileID].Name
+	tcID, _ := strconv.Atoi(tileName)
+	tc := window.tilecollection[tcID]
+
+	surrTileName := make(map[string]int)
+	surrtile := make([]int, 0)
+	for dx := -1; dx <= 1; dx++ {
+		for dy := -1; dy <= 1; dy++ {
+			if dx == 0 && dy == 0 {
+				continue
+			}
+
+			index, _ := window.wrld.TileMat.Get(dx+x, dy+y)
+			surrname := window.wrld.Tiles[int(index)].Name
+
+			if surrname == tileName {
+				surrtile = append(surrtile, 0)
+			} else {
+				surrtile = append(surrtile, 1)
+				surrTileName[surrname]++
+			}
+		}
+	}
+
+	surrTileName["Default"] = 0
+	most := "Default"
+	for tilenam, value := range surrTileName {
+		if value > surrTileName[most] {
+			most = tilenam
+		}
+	}
+
+	if most != "Default" {
+		id, _ := strconv.Atoi(most)
+		most = window.tilecollection[id].name
+	}
+
+	window.wrld.TileMat.Set(x, y, int64(tc.GetIndex(surrtile[3], surrtile[1], surrtile[4], surrtile[6], surrtile[0], surrtile[5], surrtile[2], surrtile[7], most)))
+}
+
+func getOnPos(x, y, s, r int, tilemat *GE.Matrix) int {
+	if x < 0 || x >= tilewidth || y < 0 || y >= tileheight {
+		return 0
+	}
+
+	tileID, _ := tilemat.Get(x, y)
+	if tileID >= int64(s) && tileID < int64(s+r) {
+		return 0
+	}
+
+	return 1
 }
 
 func mousebuttonrightPressed(w *Window) {

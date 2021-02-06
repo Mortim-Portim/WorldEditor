@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"marvin/GraphEng/GE"
+	"github.com/mortim-portim/GraphEng/GE"
 
 	"github.com/hajimehoshi/ebiten"
 )
@@ -26,7 +26,7 @@ func main() {
 
 	window := getWindow(wrld)
 
-	readTileCollection(resourcefile, window)
+	ReadTilesFromFolder(resourcefile, wrld, window)
 	readObjects("./resource/objects/", window)
 
 	ebiten.SetWindowSize(screenWidth, screenHeight)

@@ -2,69 +2,17 @@ package main
 
 import (
 	"image/color"
+	"image/png"
 	"io/ioutil"
-	"marvin/GraphEng/Compression"
-	"marvin/GraphEng/GE"
 	"os"
+	"strconv"
+
+	"github.com/hajimehoshi/ebiten"
+	"github.com/mortim-portim/GraphEng/Compression"
+	"github.com/mortim-portim/GraphEng/GE"
 )
 
-func getAutocompleteButton(x, y, h float64, window *Window) (btn *GE.Button) {
-	btn = GE.GetTextButton("Connect", "Edasdit", GE.StandardFont, x, y, h, color.Black, color.White)
-
-	btn.RegisterOnLeftEvent(func(btn *GE.Button) {
-		if btn.LPressed == false {
-			return
-		}
-
-		for x := 0; x < tilewidth; x++ {
-			for y := 0; y < tileheight; y++ {
-				tileID, _ := window.wrld.TileMat.GetAbs(x, y)
-				tilename := window.wrld.Tiles[tileID].Name
-				var tilecollection TileCollection
-
-				for _, antilecollection := range window.tilecollection {
-					if antilecollection.GetString() == tilename {
-						tilecollection = antilecollection
-						break
-					}
-				}
-
-				if tilecollection == nil {
-					continue
-				}
-
-				switch tc := tilecollection.(type) {
-				case *ConnectedTC:
-					n := getOnPos(x, y-1, tc.start, tc.rang, window.wrld.TileMat)
-					w := getOnPos(x-1, y, tc.start, tc.rang, window.wrld.TileMat)
-					s := getOnPos(x, y+1, tc.start, tc.rang, window.wrld.TileMat)
-					e := getOnPos(x+1, y, tc.start, tc.rang, window.wrld.TileMat)
-					nw := getOnPos(x-1, y-1, tc.start, tc.rang, window.wrld.TileMat)
-					ne := getOnPos(x+1, y, tc.start, tc.rang, window.wrld.TileMat)
-					sw := getOnPos(x-1, y+1, tc.start, tc.rang, window.wrld.TileMat)
-					se := getOnPos(x+1, y+1, tc.start, tc.rang, window.wrld.TileMat)
-
-					window.wrld.TileMat.SetAbs(x, y, int16(tc.GetIndex(n, w, s, e, ne, nw, sw, se)))
-				}
-			}
-		}
-	})
-
-	return
-}
-
-func getOnPos(x, y, s, r int, tilemat *GE.Matrix) int {
-	if x < 0 || x >= tilewidth || y < 0 || y >= tileheight {
-		return 0
-	}
-
-	tileID, _ := tilemat.GetAbs(x, y)
-	if tileID >= int16(s) && tileID < int16(s+r) {
-		return 0
-	}
-
-	return 1
-}
+//Fix Fillbutton to use random texture
 
 func getFillButton(x, y, h float64, window *Window) (btn *GE.Button) {
 	btn = GE.GetTextButton("Fill", "Fill", GE.StandardFont, x, y, h, color.Black, color.White)
@@ -76,9 +24,17 @@ func getFillButton(x, y, h float64, window *Window) (btn *GE.Button) {
 
 		for x := 0; x < window.wrld.TileMat.WAbs(); x++ {
 			for y := 0; y < window.wrld.TileMat.HAbs(); y++ {
-				window.wrld.TileMat.SetAbs(x, y, window.tilecollection[window.selectedVar].GetNum())
+				window.wrld.TileMat.SetAbs(x, y, int64(window.tilecollection[window.selectedVar].GetStart()))
 			}
 		}
+	})
+	return
+}
+
+func getBrushScrollbar(x, y, w, h float64, window *Window) (scrollbar *GE.ScrollBar) {
+	scrollbar = GE.GetStandardScrollbar(x, y, w, h, 0, 10, 0, GE.StandardFont)
+	scrollbar.RegisterOnChange(func(sb *GE.ScrollBar) {
+		window.brushsize = sb.Current()
 	})
 	return
 }
@@ -148,12 +104,27 @@ func getExportButton(x, y, h float64, name string, window *Window, input *GE.Edi
 			return
 		}
 
-		window.wrld.Save("./resource/maps/" + input.GetText() + ".map")
+		folder := "./resource/maps/" + input.GetText() + "/"
+		os.Mkdir(folder, 0755)
+		os.Mkdir(folder+"tile/", 0755)
+		window.wrld.Save(folder + "map.txt")
 
-		file, _ := os.Create("./resource/maps/" + input.GetText() + ".index")
+		index, _ := os.Create(folder + "/tile/#index.txt")
 
-		for _, line := range window.importedTiles {
-			file.WriteString(line + "\n")
+		light := &GE.ImageObj{X: 0, Y: 0, W: 16, H: 16}
+		dark := &GE.ImageObj{X: 0, Y: 16, W: 16, H: 16}
+		for i, tile := range window.wrld.Tiles {
+			name := strconv.Itoa(i) + ".png"
+			file, _ := os.Create(folder + "/tile/" + name)
+			img, _ := ebiten.NewImage(16, 32, ebiten.FilterDefault)
+
+			tile.Draw(img, light, 255)
+			tile.Draw(img, dark, 0)
+
+			png.Encode(file, img)
+
+			index.WriteString(name + "\n")
+			file.Close()
 		}
 	})
 	return

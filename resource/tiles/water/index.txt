@@ -1,0 +1,17 @@
+waterF.png
+waterdirtU.png Direction:U
+waterdirtU.png Direction:R,Rotation:90
+waterdirtU.png Direction:D,Rotation:180
+waterdirtU.png Direction:L,Rotation:270
+waterdirtUL.png Direction:UL
+waterdirtUL.png Direction:UR,Rotation:90
+waterdirtUL.png Direction:DR,Rotation:180
+waterdirtUL.png Direction:DL,Rotation:270
+watersandU.png Tile:sand,Direction:U
+watersandU.png Tile:sand,Direction:R,Rotation:90
+watersandU.png Tile:sand,Direction:D,Rotation:180
+watersandU.png Tile:sand,Direction:L,Rotation:270
+watersandUL.png Tile:sand,Direction:UL
+watersandUL.png Tile:sand,Direction:UR,Rotation:90
+watersandUL.png Tile:sand,Direction:DR,Rotation:180
+watersandUL.png Tile:sand,Direction:DL,Rotation:270

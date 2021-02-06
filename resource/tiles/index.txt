@@ -1,0 +1,13 @@
+cobblestone
+coral
+grass
+lava
+magicbubble
+magiccracked
+magictile
+magicwater
+magma
+path
+sand
+stone
+water

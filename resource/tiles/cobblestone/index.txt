@@ -1,0 +1,15 @@
+cobble1.png
+cobble2.png
+cobble3.png
+cobbleU.png Direction:U
+cobbleU.png Direction:R,Rotation:90
+cobbleU.png Direction:D,Rotation:180
+cobbleU.png Direction:L,Rotation:270
+cobbleLU.png Direction:UL
+cobbleLU.png Direction:UR,Rotation:90
+cobbleLU.png Direction:DR,Rotation:180
+cobbleLU.png Direction:DL,Rotation:270
+cobbleCLU.png Direction:Q
+cobbleCLU.png Direction:K,Rotation:90
+cobbleCLU.png Direction:M,Rotation:180
+cobbleCLU.png Direction:N,Rotation:270

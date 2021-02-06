@@ -2,31 +2,33 @@ package main
 
 import (
 	"image/color"
-	"marvin/GraphEng/GE"
+
+	"github.com/mortim-portim/GraphEng/GE"
 
 	"github.com/hajimehoshi/ebiten"
 )
 
 type Window struct {
 	wrld    *GE.WorldStructure
-	objects *GE.Group
+	objects *Group
 
 	frame, curType int
 
 	//Tile
 	useSub         bool
 	selectedVar    int
-	tilecollection []TileCollection
-	tilebuttons    *GE.Group
-	tilesubbuttons *GE.Group
+	brushsize      int
+	tilecollection []*TileCollection
+	tilebuttons    *Group
+	tilesubbuttons *Group
 	importedTiles  []string
 
 	//Object
 	currentObject *GE.Structure
-	objectbuttons *GE.Group
+	objectbuttons *Group
 
 	//Light
-	lightbuttons *GE.Group
+	lightbuttons *Group
 }
 
 func (w *Window) Update(screen *ebiten.Image) error {
@@ -59,11 +61,11 @@ func (w *Window) Update(screen *ebiten.Image) error {
 	_, y := ebiten.Wheel()
 
 	if y < 0 {
-		w.wrld.SetDisplayWH(w.wrld.TileMat.W()+1, w.wrld.TileMat.H()+1)
+		w.wrld.SetDisplayWH(w.wrld.TileMat.W()-1, w.wrld.TileMat.H()-1)
 	}
 
 	if y > 0 {
-		w.wrld.SetDisplayWH(w.wrld.TileMat.W()-1, w.wrld.TileMat.H()-1)
+		w.wrld.SetDisplayWH(w.wrld.TileMat.W()-3, w.wrld.TileMat.H()-3)
 	}
 
 	w.update()
@@ -105,7 +107,7 @@ func (g *Window) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func getWindow(wrld *GE.WorldStructure) (window *Window) {
-	window = &Window{wrld: wrld, objects: GE.GetGroup(), tilebuttons: GE.GetGroup(), tilesubbuttons: GE.GetGroup(), objectbuttons: GE.GetGroup()}
+	window = &Window{wrld: wrld, objects: GetGroup(), tilebuttons: GetGroup(), tilesubbuttons: GetGroup(), objectbuttons: GetGroup()}
 
 	lightbar := getLightlevelScrollbar(1000, 50, 500, 30, window)
 	pathlabel := getPathLabel(1000, 120, 50, 25)
@@ -116,9 +118,8 @@ func getWindow(wrld *GE.WorldStructure) (window *Window) {
 	lightbutton := getTabButton(1400, 300, 50, 2, "Light", window)
 	window.objects.Add(lightbar, pathlabel, importbutton, exportbutton, tilebutton, objbutton, lightbutton)
 
-	autobutton := getAutocompleteButton(1000, 400, 50, window)
-	fillbutton := getFillButton(1300, 400, 50, window)
-	window.tilebuttons.Add(autobutton, fillbutton)
-
+	//autobutton := getAutocompleteButton(1000, 400, 50, window)
+	brushscrollbar := getBrushScrollbar(1000, 400, 300, 30, window)
+	window.tilebuttons.Add(brushscrollbar)
 	return
 }

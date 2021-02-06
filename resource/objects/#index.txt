@@ -4,3 +4,8 @@ tree2big
 bush
 bushberie
 mushrooms1
+bloodbush
+bushmagic
+magicflower
+magictree
+magmastone

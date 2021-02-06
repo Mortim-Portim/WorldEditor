@@ -1,82 +1,55 @@
 package main
 
 import (
-	"marvin/GraphEng/GE"
 	"math/rand"
 )
 
-type TileCollection interface {
-	GetString() string
-	GetNum() int16
-	GetLast() int
-	GetStart() int
-	GetRange() int
-	GetSubButtons() *GE.Group
-}
-
-type DefaultTC struct {
+type TileCollection struct {
 	name        string
 	start, rang int
-	subbuttons  *GE.Group
+	subbuttons  *Group
+	index       map[uint8]map[string][]int64
 }
 
-func (tc *DefaultTC) GetString() string {
+func (tc *TileCollection) GetString() string {
 	return tc.name
 }
 
-func (tc *DefaultTC) GetLast() int {
-	return tc.start + tc.rang
-}
-
-func (tc *DefaultTC) GetStart() int {
+func (tc *TileCollection) GetStart() int {
 	return tc.start
 }
 
-func (tc *DefaultTC) GetRange() int {
+func (tc *TileCollection) GetRange() int {
 	return tc.rang
 }
 
-func (tc *DefaultTC) GetSubButtons() *GE.Group {
+func (tc *TileCollection) GetSubButtons() *Group {
 	return tc.subbuttons
 }
 
-type RandomTC struct {
-	DefaultTC
-}
+func (tc *TileCollection) GetIndex(u, l, d, r, ul, ur, dl, dr int, tile string) int64 {
+	surround := uint8(1*u + 2*l + 4*d + 8*r + 16*ul + 32*ur + 64*dl + 128*dr)
+	redSurround := uint8(1*u + 2*l + 4*d + 8*r)
 
-func (tc *RandomTC) GetNum() int16 {
-	return int16(rand.Intn(tc.rang) + tc.start)
-}
+	surrtiles, avab := tc.index[surround]
 
-type ConnectedTC struct {
-	DefaultTC
-	index []uint8
-}
-
-func (tc *ConnectedTC) GetNum() int16 {
-	return int16(tc.start)
-}
-
-func (tc *ConnectedTC) GetIndex(n, w, s, e, nw, ne, sw, se int) int {
-	idx, subIdx := 0, 0
-	surround := uint8(1*n + 2*w + 4*s + 8*e + 16*nw + 32*ne + 64*sw + 128*se)
-	redSurround := uint8(1*n + 2*w + 4*s + 8*e)
-
-	for i, num := range tc.index {
-		if num == surround {
-			idx = i
-		}
-
-		if num == redSurround {
-			subIdx = i
-		}
+	if !avab {
+		surrtiles, avab = tc.index[redSurround]
 	}
 
-	if idx == 0 {
-		idx = subIdx
+	if !avab {
+		surrtiles = tc.index[0]
 	}
 
-	//fmt.Printf("%v %v %v %v %v %v %v %v -> %v %v %v\n", n, w, s, e, nw, ne, sw, se, surround, redSurround, idx)
+	cnttile, avab := surrtiles[tile]
 
-	return idx + tc.start
+	if !avab {
+		cnttile, avab = surrtiles["Default"]
+	}
+
+	if !avab {
+		return int64(tc.start)
+	}
+
+	return cnttile[rand.Intn(len(cnttile))]
 }
