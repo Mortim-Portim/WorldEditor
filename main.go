@@ -32,6 +32,9 @@ func main() {
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowResizable(true)
 	ebiten.SetWindowTitle("WorldEditor")
+	ebiten.SetMaxTPS(30)
+	ebiten.SetVsyncEnabled(true)
+	ebiten.SetRunnableOnUnfocused(true)
 	if err := ebiten.RunGame(window); err != nil {
 		log.Fatal(err)
 	}

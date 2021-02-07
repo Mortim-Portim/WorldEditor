@@ -1,4 +1,5 @@
 house1
+house2
 tree2
 tree2big
 bush
@@ -9,3 +10,7 @@ bushmagic
 magicflower
 magictree
 magmastone
+wall
+tower
+hud
+stables

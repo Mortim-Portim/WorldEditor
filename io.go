@@ -235,7 +235,7 @@ func readObjects(path string, window *Window) {
 
 		button.Data = object
 		button.RegisterOnLeftEvent(func(btn *GE.Button) {
-			window.currentObject = button.Data.(*GE.Structure)
+			window.currentStructure = button.Data.(*GE.Structure)
 		})
 
 		window.objectbuttons.Add(button)

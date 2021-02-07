@@ -1,16 +1,19 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 
 	"github.com/mortim-portim/GraphEng/GE"
 
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/inpututil"
 )
 
 type Window struct {
-	wrld    *GE.WorldStructure
-	objects *Group
+	wrld      *GE.WorldStructure
+	objects   *Group
+	pathlabel *GE.EditText
 
 	frame, curType int
 
@@ -24,8 +27,9 @@ type Window struct {
 	importedTiles  []string
 
 	//Object
-	currentObject *GE.Structure
-	objectbuttons *Group
+	currentStructure *GE.Structure
+	curretObject     *GE.StructureObj
+	objectbuttons    *Group
 
 	//Light
 	lightbuttons *Group
@@ -38,25 +42,15 @@ func (w *Window) Update(screen *ebiten.Image) error {
 		mousebuttonleftPressed(w)
 	}
 
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		mousebuttonleftJustPressed(w)
+	}
+
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonRight) {
 		mousebuttonrightPressed(w)
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
-		w.wrld.Move(-1, 0, true, false)
-	}
-
-	if ebiten.IsKeyPressed(ebiten.KeyRight) {
-		w.wrld.Move(1, 0, true, false)
-	}
-
-	if ebiten.IsKeyPressed(ebiten.KeyUp) {
-		w.wrld.Move(0, -1, true, false)
-	}
-
-	if ebiten.IsKeyPressed(ebiten.KeyDown) {
-		w.wrld.Move(0, 1, true, false)
-	}
+	keyPressed(w)
 
 	_, y := ebiten.Wheel()
 
@@ -84,6 +78,11 @@ func (g *Window) update() {
 	case 1:
 		g.objectbuttons.Update(g.frame)
 	}
+
+	fmt.Println(g.frame % 1800)
+	if g.frame%1800 == 0 {
+		ExportWorld(g.pathlabel.GetText(), g)
+	}
 }
 
 func (g *Window) draw(screen *ebiten.Image) {
@@ -109,8 +108,10 @@ func (g *Window) Layout(outsideWidth, outsideHeight int) (int, int) {
 func getWindow(wrld *GE.WorldStructure) (window *Window) {
 	window = &Window{wrld: wrld, objects: GetGroup(), tilebuttons: GetGroup(), tilesubbuttons: GetGroup(), objectbuttons: GetGroup()}
 
-	lightbar := getLightlevelScrollbar(1000, 50, 500, 30, window)
 	pathlabel := getPathLabel(1000, 120, 50, 25)
+	window.pathlabel = pathlabel
+
+	lightbar := getLightlevelScrollbar(1000, 50, 500, 30, window)
 	importbutton := getImportButton(1000, 200, 50, "Import", window, pathlabel)
 	exportbutton := getExportButton(1200, 200, 50, "Export", window, pathlabel)
 	tilebutton := getTabButton(1000, 300, 50, 0, "Tile", window)
