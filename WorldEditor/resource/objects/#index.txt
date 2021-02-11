@@ -7,6 +7,7 @@ tree2big
 bush
 bushberie
 mushrooms1
+lilipad
 bloodbush
 bushmagic
 magicflower
@@ -25,12 +26,12 @@ caventrance
 stone
 stones
 stonescopper
-stones_L
-stones_R
-stones_U
 stones_D
-stones_DL
-stones_DR
+stonewalldiagonelLU
+stonewalldiagonelLD
+stonewalldiagonelRU
+stonewalldiagonelRD
+stonewallUD
 torch
 fence_DL
 fence_DR

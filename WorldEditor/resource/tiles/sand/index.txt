@@ -8,3 +8,7 @@ sandgrass_LD.png Direction:LD,Tile:grass
 sandgrass_LU.png Direction:LU,Tile:grass
 sandgrass_RD.png Direction:RD,Tile:grass
 sandgrass_RU.png Direction:RU,Tile:grass
+sandgrass_CLU.png Direction:Q,Tile:grass
+sandgrass_CRU.png Direction:K,Tile:grass
+sandgrass_CRD.png Direction:M,Tile:grass
+sandgrass_CLD.png Direction:N,Tile:grass

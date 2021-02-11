@@ -14,7 +14,7 @@ import (
 //Bug: Deleting Tile Folder
 //Bug: Changing Tile Folder
 
-func ReadTilesFromFolder(path string, ws *GE.WorldStructure, window *Window) {
+func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
 	files, err := ioutil.ReadDir(path)
 	Check(err, "Resource filepath is false")
 
@@ -83,6 +83,7 @@ func ReadTilesFromFolder(path string, ws *GE.WorldStructure, window *Window) {
 		mbutton := GE.GetImageButton(subbtn[0].(*GE.Button).Img.Img, float64(1000+(i%8)*70), 500+(math.Ceil(float64(i/8)))*70, 64, 64)
 		mbutton.Data = i
 		mbutton.RegisterOnLeftEvent(func(b *GE.Button) {
+
 			if !b.LPressed {
 				return
 			}
@@ -202,7 +203,8 @@ func registerDirection(direction, cnttile string, i int64, index map[uint8]map[s
 }
 
 func readObjects(path string, window *Window) {
-	objects, _ := GE.ReadStructures(path)
+	objects, err := GE.ReadStructures(path)
+	Check(err, "Objectfolder is broken")
 
 	for i, object := range objects {
 		btnImg := object.NUA.GetDay()

@@ -1,9 +1,9 @@
 magictile000.png
-magicgrassgrass_D.png
-magicgrassgrass_L.png
-magicgrassgrass_LD.png
-magicgrassgrass_LU.png
-magicgrassgrass_R.png
-magicgrassgrass_RD.png
-magicgrassgrass_RU.png
-magicgrassgrass_U.png
+magicgrassgrass_D.png Direction:U
+magicgrassgrass_D.png Direction:D,Rotation:180
+magicgrassgrass_R.png Direction:L
+magicgrassgrass_R.png Direction:R,Rotation:180
+magicgrassgrass_LD.png Direction:DL
+magicgrassgrass_LU.png Direction:UL
+magicgrassgrass_RD.png Direction:DR
+magicgrassgrass_RU.png Direction:UR

@@ -1,5 +1,5 @@
 spriteWidth:    16
-updatePeriod:   0
+updatePeriod:   1
 hitBoxWidth:    1
 hitBoxHeight:   1
 Collides:       false

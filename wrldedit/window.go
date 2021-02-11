@@ -18,7 +18,7 @@ const (
 )
 
 type Window struct {
-	wrld      *GE.WorldStructure
+	wrld      *WorldStructure
 	objects   *Group
 	pathlabel *GE.EditText
 
@@ -111,7 +111,7 @@ func (g *Window) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return ScreenWidth, ScreenHeight
 }
 
-func GetWindow(wrld *GE.WorldStructure) (window *Window) {
+func GetWindow(wrld *WorldStructure) (window *Window) {
 	window = &Window{wrld: wrld, objects: GetGroup(), tilebuttons: GetGroup(), tilesubbuttons: GetGroup(), objectbuttons: GetGroup()}
 
 	pathlabel := getPathLabel(1000, 120, 50, 25)

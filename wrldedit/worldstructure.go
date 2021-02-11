@@ -20,7 +20,7 @@ type WorldStructure struct {
 }
 
 func (wrld *WorldStructure) Draw(screen *ebiten.Image) {
-	wrld.Draw(screen)
+	wrld.WorldStructure.Draw(screen)
 
 	if wrld.drawRegion {
 		for y := 0; y < wrld.RegionMat.H(); y++ {

@@ -96,7 +96,7 @@ func mousebuttonleftJustPressed(w *Window) {
 	if x >= 0 && ix < w.wrld.TileMat.W() && y >= 0 && iy < w.wrld.TileMat.H() {
 		switch w.curType {
 		case 1:
-			rx, ry := math.Ceil((x+w.wrld.TileMat.Focus().Min().X)*10)/10, math.Ceil((y+w.wrld.TileMat.Focus().Min().Y)*10)/10
+			rx, ry := math.Ceil(x+w.wrld.TileMat.Focus().Min().X), math.Ceil(y+w.wrld.TileMat.Focus().Min().Y)
 			structObj := GE.GetStructureObj(w.currentStructure, rx, ry)
 			w.curretObject = structObj
 			w.wrld.AddStructObj(structObj)
@@ -180,7 +180,7 @@ func keyPressed(w *Window) {
 	}
 }
 
-func findObject(w *GE.WorldStructure, x, y float64) (idx int, obj *GE.StructureObj) {
+func findObject(w *WorldStructure, x, y float64) (idx int, obj *GE.StructureObj) {
 	for i, obj := range w.Objects {
 		point := GE.Point{x, y}
 		if point.InBounds(obj.Drawbox) {
