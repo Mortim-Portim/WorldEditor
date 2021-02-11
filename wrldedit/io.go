@@ -61,9 +61,7 @@ func ReadTilesFromFolder(path string, ws *GE.WorldStructure, window *Window) {
 			rotation := tile.GetFloat64Else("Rotation", 0)
 			name, _ := tile.GetString("Name")
 
-			fmt.Println(name)
-			img, err := GE.LoadDayNightImg(path+str+"/"+name, 0, 0, 0, 0, rotation)
-			Check(err, "Hi")
+			img, _ := GE.LoadDayNightImg(path+str+"/"+name, 0, 0, 0, 0, rotation)
 			img.ScaleToOriginalSize()
 			ws.AddTile(&GE.Tile{img, strconv.Itoa(i)})
 
