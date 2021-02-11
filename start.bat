@@ -1,0 +1,2 @@
+Worldeditor.exe
+pause

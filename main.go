@@ -4,16 +4,9 @@ import (
 	"log"
 
 	"github.com/mortim-portim/GraphEng/GE"
+	"github.com/mortim-portim/WorldEditor/wrldedit"
 
 	"github.com/hajimehoshi/ebiten"
-)
-
-const (
-	screenWidth  = 1600
-	screenHeight = 900
-	tilewidth    = 100
-	tileheight   = 100
-	resourcefile = "./resource/tiles/"
 )
 
 func main() {
@@ -24,12 +17,9 @@ func main() {
 	wrld.SetDisplayWH(18, 16)
 	wrld.SetLightStats(0, 255, 0)
 
-	window := getWindow(wrld)
+	window := wrldedit.GetWindow(wrld)
 
-	ReadTilesFromFolder(resourcefile, wrld, window)
-	readObjects("./resource/objects/", window)
-
-	ebiten.SetWindowSize(screenWidth, screenHeight)
+	ebiten.SetWindowSize(wrldedit.ScreenWidth, wrldedit.ScreenHeight)
 	ebiten.SetWindowResizable(true)
 	ebiten.SetWindowTitle("WorldEditor")
 	ebiten.SetMaxTPS(30)
