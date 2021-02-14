@@ -1,6 +1,7 @@
 package wrldedit
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 
@@ -36,11 +37,14 @@ func mousebuttonleftPressed(w *Window) {
 				}
 			}
 		case 2:
-			lightID, _ := w.wrld.LIdxMat.Get(ix, iy)
-			if lightID == -1 {
-				w.wrld.AddLights(GE.GetLightSource(&GE.Point{float64(x) + w.wrld.TileMat.Focus().Min().X, float64(y) + w.wrld.TileMat.Focus().Min().Y}, &GE.Vector{0, -1, 0}, 360, 400, 0.01, false))
-			}
+			fmt.Println(w.selectedVar)
+			w.wrld.RegionMat.Set(ix, iy, int64(w.selectedVar))
 		}
+
+		/*lightID, _ := w.wrld.LIdxMat.Get(ix, iy)
+		if lightID == -1 {
+			w.wrld.AddLights(GE.GetLightSource(&GE.Point{float64(x) + w.wrld.TileMat.Focus().Min().X, float64(y) + w.wrld.TileMat.Focus().Min().Y}, &GE.Vector{0, -1, 0}, 360, 400, 0.01, false))
+		}*/
 	}
 }
 
@@ -60,8 +64,9 @@ func connectTiles(x, y int, window *Window) {
 
 			index, _ := window.wrld.TileMat.Get(dx+x, dy+y)
 			surrname := window.wrld.Tiles[int(index)].Name
+			surid, _ := strconv.Atoi(surrname)
 
-			if surrname == tileName {
+			if tc.GetSame(window.tilecollection[surid].name) {
 				surrtile = append(surrtile, 0)
 			} else {
 				surrtile = append(surrtile, 1)
@@ -96,6 +101,10 @@ func mousebuttonleftJustPressed(w *Window) {
 	if x >= 0 && ix < w.wrld.TileMat.W() && y >= 0 && iy < w.wrld.TileMat.H() {
 		switch w.curType {
 		case 1:
+			if w.currentStructure == nil {
+				break
+			}
+
 			rx, ry := math.Ceil(x+w.wrld.TileMat.Focus().Min().X), math.Ceil(y+w.wrld.TileMat.Focus().Min().Y)
 			structObj := GE.GetStructureObj(w.currentStructure, rx, ry)
 			w.curretObject = structObj
@@ -127,12 +136,12 @@ func mousebuttonrightPressed(w *Window) {
 				w.wrld.UpdateObjMat()
 			}
 		case 2:
-			lightID, _ := w.wrld.LIdxMat.Get(ix, iy)
+			/*lightID, _ := w.wrld.LIdxMat.Get(ix, iy)
 			if lightID >= 0 {
 				w.wrld.Lights[lightID] = w.wrld.Lights[len(w.wrld.Lights)-1]
 				w.wrld.Lights = w.wrld.Lights[:len(w.wrld.Lights)-1]
 				w.wrld.RemoveLight(int(lightID))
-			}
+			}*/
 		}
 	}
 }

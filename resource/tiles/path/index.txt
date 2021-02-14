@@ -1,3 +1,4 @@
+Info Same:cobblestone-water
 pathF.png
 pathU.png Direction:U
 pathU.png Direction:R,Rotation:90

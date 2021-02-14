@@ -7,6 +7,7 @@ import (
 	"math"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/mortim-portim/GraphEng/GE"
 )
@@ -31,6 +32,23 @@ func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
 	for i, str := range indexs {
 		folder, _ := ioutil.ReadDir(path + str + "/")
 		tiles, cltindex := scanfile(path + str + "/index.txt")
+
+		same := make([]string, 0)
+		if len(tiles) != 0 {
+			if strings.Split(tiles[0], " ")[0] == "Info" {
+				info := ReadTileInfo(tiles[0])
+
+				saminfo, avab := info.GetString("Same")
+				if avab {
+					for _, spl := range strings.Split(saminfo, "-") {
+						same = append(same, spl)
+					}
+				}
+
+				tiles = tiles[1:]
+			}
+		}
+
 		tiledata := make([]InputParam, len(tiles))
 
 		for y, n := range tiles {
@@ -61,7 +79,8 @@ func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
 			rotation := tile.GetFloat64Else("Rotation", 0)
 			name, _ := tile.GetString("Name")
 
-			img, _ := GE.LoadDayNightImg(path+str+"/"+name, 0, 0, 0, 0, rotation)
+			img, err := GE.LoadDayNightImg(path+str+"/"+name, 0, 0, 0, 0, rotation)
+			Check(err, "Image "+name+" not loading")
 			img.ScaleToOriginalSize()
 			ws.AddTile(&GE.Tile{img, strconv.Itoa(i)})
 
@@ -98,7 +117,7 @@ func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
 
 		subgroup := &Group{subbtn}
 
-		tc = &TileCollection{str, lastnum, len(tiles), subgroup, index}
+		tc = &TileCollection{str, same, lastnum, len(tiles), subgroup, index}
 
 		window.tilecollection = append(window.tilecollection, tc)
 
@@ -208,7 +227,7 @@ func readObjects(path string, window *Window) {
 
 	for i, object := range objects {
 		btnImg := object.NUA.GetDay()
-		button := GE.GetImageButton(btnImg, float64(1000+(i%8)*70), 500+(math.Ceil(float64(i/8)))*70, 64, 64)
+		button := GE.GetImageButton(btnImg, float64(1000+(i%8)*70), 400+(math.Ceil(float64(i/8)))*70, 64, 64)
 
 		button.Data = object
 		button.RegisterOnLeftEvent(func(btn *GE.Button) {

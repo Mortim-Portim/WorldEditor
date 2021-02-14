@@ -1,3 +1,9 @@
+New:
 scroll object
-tiles same
 region
+
+Bug:
+Button keine Animation
+
+Marvin:
+bei scrollbar nummer weg machen

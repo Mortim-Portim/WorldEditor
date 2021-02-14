@@ -23,10 +23,10 @@ type Window struct {
 	pathlabel *GE.EditText
 
 	frame, curType int
+	selectedVar    int
 
 	//Tile
 	useSub         bool
-	selectedVar    int
 	brushsize      int
 	tilecollection []*TileCollection
 	tilebuttons    *Group
@@ -38,8 +38,8 @@ type Window struct {
 	curretObject     *GE.StructureObj
 	objectbuttons    *Group
 
-	//Light
-	lightbuttons *Group
+	//Region
+	regionbuttons *Group
 }
 
 func (w *Window) Update(screen *ebiten.Image) error {
@@ -75,19 +75,21 @@ func (w *Window) Update(screen *ebiten.Image) error {
 	return nil
 }
 
-func (g *Window) update() {
-	g.objects.Update(g.frame)
+func (w *Window) update() {
+	w.objects.Update(w.frame)
 
-	switch g.curType {
+	switch w.curType {
 	case 0:
-		g.tilebuttons.Update(g.frame)
-		g.tilesubbuttons.Update(g.frame)
+		w.tilebuttons.Update(w.frame)
+		w.tilesubbuttons.Update(w.frame)
 	case 1:
-		g.objectbuttons.Update(g.frame)
+		w.objectbuttons.Update(w.frame)
+	case 2:
+		w.regionbuttons.Update(w.frame)
 	}
 
-	if g.frame%1800 == 0 {
-		ExportWorld(g.pathlabel.GetText(), g)
+	if w.frame%1800 == 0 {
+		ExportWorld(w.pathlabel.GetText(), w)
 	}
 }
 
@@ -104,6 +106,8 @@ func (g *Window) draw(screen *ebiten.Image) {
 		g.tilesubbuttons.Draw(screen)
 	case 1:
 		g.objectbuttons.Draw(screen)
+	case 2:
+		g.regionbuttons.Draw(screen)
 	}
 }
 
@@ -112,9 +116,9 @@ func (g *Window) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func GetWindow(wrld *WorldStructure) (window *Window) {
-	window = &Window{wrld: wrld, objects: GetGroup(), tilebuttons: GetGroup(), tilesubbuttons: GetGroup(), objectbuttons: GetGroup()}
+	window = &Window{wrld: wrld, objects: GetGroup(), tilebuttons: GetGroup(), tilesubbuttons: GetGroup(), objectbuttons: GetGroup(), regionbuttons: GetGroup()}
 
-	pathlabel := getPathLabel(1000, 120, 50, 25)
+	pathlabel := GE.GetEditText("Path", 1000, 120, 50, 25, GE.StandardFont, color.Black, color.White)
 	window.pathlabel = pathlabel
 
 	lightbar := getLightlevelScrollbar(1000, 50, 500, 30, window)
@@ -122,12 +126,18 @@ func GetWindow(wrld *WorldStructure) (window *Window) {
 	exportbutton := getExportButton(1200, 200, 50, "Export", window, pathlabel)
 	tilebutton := getTabButton(1000, 300, 50, 0, "Tile", window)
 	objbutton := getTabButton(1200, 300, 50, 1, "Objects", window)
-	lightbutton := getTabButton(1400, 300, 50, 2, "Light", window)
+	lightbutton := getTabButton(1400, 300, 50, 2, "Region", window)
 	window.objects.Add(lightbar, pathlabel, importbutton, exportbutton, tilebutton, objbutton, lightbutton)
 
-	//autobutton := getAutocompleteButton(1000, 400, 50, window)
-	brushscrollbar := getBrushScrollbar(1000, 400, 300, 30, window)
-	window.tilebuttons.Add(brushscrollbar)
+	brushlabel := GE.GetTextImage("Brush:", 1000, 400, 30, GE.StandardFont, color.Black, color.Transparent)
+	brushscrollbar := getBrushScrollbar(1200, 400, 300, 30, window)
+	window.tilebuttons.Add(brushlabel, brushscrollbar)
+
+	alphalabel := GE.GetTextImage("Overlay:", 1000, 400, 30, GE.StandardFont, color.Black, color.Transparent)
+	regalphbar := getRegionAlphaScrollbar(1200, 400, 300, 30, window)
+	colorlabel := GE.GetEditText("Col", 1200, 480, 50, 6, GE.StandardFont, color.Black, color.White)
+	crtnwregionbutton := getCrtNwRegionButton(1000, 480, 50, window, colorlabel)
+	window.regionbuttons.Add(alphalabel, regalphbar, colorlabel, crtnwregionbutton)
 
 	ReadTilesFromFolder(resourcefile, wrld, window)
 	readObjects("./resource/objects/", window)

@@ -6,6 +6,7 @@ import (
 
 type TileCollection struct {
 	name        string
+	same        []string
 	start, rang int
 	subbuttons  *Group
 	index       map[uint8]map[string][]int64
@@ -52,4 +53,18 @@ func (tc *TileCollection) GetIndex(u, l, d, r, ul, ur, dl, dr int, tile string) 
 	}
 
 	return cnttile[rand.Intn(len(cnttile))]
+}
+
+func (tc *TileCollection) GetSame(name string) bool {
+	if name == tc.name {
+		return true
+	}
+
+	for _, nam := range tc.same {
+		if name == nam {
+			return true
+		}
+	}
+
+	return false
 }
