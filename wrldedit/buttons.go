@@ -2,7 +2,6 @@ package wrldedit
 
 import (
 	"image/color"
-	"math"
 	"strconv"
 
 	"github.com/mortim-portim/GraphEng/GE"
@@ -58,20 +57,14 @@ func getCrtNwRegionButton(x, y, h float64, window *Window, rgb *GE.EditText) (bt
 		b := (col & 0xFF)
 
 		region := GetRegion(color.RGBA{uint8(r), uint8(g), uint8(b), 255})
-		i := len(window.wrld.Region)
-		regbtn := GE.GetImageButton(region.color.Img, float64(1000+(i%8)*70), 550+(math.Ceil(float64(i/8)))*70, 64, 64)
-		regbtn.Data = i + 1
-		regbtn.RegisterOnLeftEvent(func(btn *GE.Button) {
-			window.selectedVar = btn.Data.(int)
-		})
-		window.wrld.Region = append(window.wrld.Region, region)
-		window.regionbuttons.Add(regbtn)
+		AddRegion(region, window)
 	})
 	return
 }
 
 func getRegionAlphaScrollbar(x, y, w, h float64, window *Window) (scrollbar *GE.ScrollBar) {
 	scrollbar = GE.GetStandardScrollbar(x, y, w, h, 0, 100, 0, GE.StandardFont)
+	scrollbar.HideValue()
 	scrollbar.RegisterOnChange(func(sb *GE.ScrollBar) {
 		window.wrld.Regionalpha = float64(sb.Current()) / 100
 	})
@@ -88,6 +81,7 @@ func getBrushScrollbar(x, y, w, h float64, window *Window) (scrollbar *GE.Scroll
 
 func getLightlevelScrollbar(x, y, w, h float64, window *Window) (scrollbar *GE.ScrollBar) {
 	scrollbar = GE.GetStandardScrollbar(x, y, w, h, 0, 255, 255, GE.StandardFont)
+	scrollbar.HideValue()
 	scrollbar.RegisterOnChange(func(sb *GE.ScrollBar) {
 		window.wrld.SetLightLevel(int16(sb.Current()))
 	})

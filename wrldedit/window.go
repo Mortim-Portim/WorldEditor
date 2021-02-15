@@ -24,10 +24,10 @@ type Window struct {
 
 	frame, curType int
 	selectedVar    int
+	brushsize      int
 
 	//Tile
 	useSub         bool
-	brushsize      int
 	tilecollection []*TileCollection
 	tilebuttons    *Group
 	tilesubbuttons *Group
@@ -36,10 +36,11 @@ type Window struct {
 	//Object
 	currentStructure *GE.Structure
 	curretObject     *GE.StructureObj
-	objectbuttons    *Group
+	objectbuttons    *GE.ScrollPanel
 
 	//Region
-	regionbuttons *Group
+	regionbuttons   *Group
+	regselectbutton *Group
 }
 
 func (w *Window) Update(screen *ebiten.Image) error {
@@ -59,16 +60,6 @@ func (w *Window) Update(screen *ebiten.Image) error {
 
 	keyPressed(w)
 
-	_, y := ebiten.Wheel()
-
-	if y < 0 {
-		w.wrld.SetDisplayWH(w.wrld.TileMat.W()-1, w.wrld.TileMat.H()-1)
-	}
-
-	if y > 0 {
-		w.wrld.SetDisplayWH(w.wrld.TileMat.W()-3, w.wrld.TileMat.H()-3)
-	}
-
 	w.update()
 	w.draw(screen)
 
@@ -76,6 +67,7 @@ func (w *Window) Update(screen *ebiten.Image) error {
 }
 
 func (w *Window) update() {
+	w.wrld.Update(w.frame)
 	w.objects.Update(w.frame)
 
 	switch w.curType {
@@ -86,6 +78,7 @@ func (w *Window) update() {
 		w.objectbuttons.Update(w.frame)
 	case 2:
 		w.regionbuttons.Update(w.frame)
+		w.regselectbutton.Update(w.frame)
 	}
 
 	if w.frame%1800 == 0 {
@@ -108,6 +101,7 @@ func (g *Window) draw(screen *ebiten.Image) {
 		g.objectbuttons.Draw(screen)
 	case 2:
 		g.regionbuttons.Draw(screen)
+		g.regselectbutton.Draw(screen)
 	}
 }
 
@@ -116,7 +110,7 @@ func (g *Window) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func GetWindow(wrld *WorldStructure) (window *Window) {
-	window = &Window{wrld: wrld, objects: GetGroup(), tilebuttons: GetGroup(), tilesubbuttons: GetGroup(), objectbuttons: GetGroup(), regionbuttons: GetGroup()}
+	window = &Window{wrld: wrld, objects: GetGroup(), tilebuttons: GetGroup(), tilesubbuttons: GetGroup(), regionbuttons: GetGroup(), regselectbutton: GetGroup()}
 
 	pathlabel := GE.GetEditText("Path", 1000, 120, 50, 25, GE.StandardFont, color.Black, color.White)
 	window.pathlabel = pathlabel
@@ -133,14 +127,14 @@ func GetWindow(wrld *WorldStructure) (window *Window) {
 	brushscrollbar := getBrushScrollbar(1200, 400, 300, 30, window)
 	window.tilebuttons.Add(brushlabel, brushscrollbar)
 
-	alphalabel := GE.GetTextImage("Overlay:", 1000, 400, 30, GE.StandardFont, color.Black, color.Transparent)
-	regalphbar := getRegionAlphaScrollbar(1200, 400, 300, 30, window)
-	colorlabel := GE.GetEditText("Col", 1200, 480, 50, 6, GE.StandardFont, color.Black, color.White)
-	crtnwregionbutton := getCrtNwRegionButton(1000, 480, 50, window, colorlabel)
-	window.regionbuttons.Add(alphalabel, regalphbar, colorlabel, crtnwregionbutton)
+	alphalabel := GE.GetTextImage("Overlay:", 1000, 500, 30, GE.StandardFont, color.Black, color.Transparent)
+	regalphbar := getRegionAlphaScrollbar(1200, 500, 300, 30, window)
+	colorlabel := GE.GetEditText("Col", 1200, 560, 50, 6, GE.StandardFont, color.Black, color.White)
+	crtnwregionbutton := getCrtNwRegionButton(1000, 560, 50, window, colorlabel)
+	window.regionbuttons.Add(brushlabel, brushscrollbar, alphalabel, regalphbar, colorlabel, crtnwregionbutton)
 
 	ReadTilesFromFolder(resourcefile, wrld, window)
-	readObjects("./resource/objects/", window)
+	ReadObjects("./resource/objects/", window)
 
 	return
 }

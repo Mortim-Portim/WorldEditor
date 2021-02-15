@@ -113,11 +113,9 @@ func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
 
 		tilebutton = append(tilebutton, mbutton)
 
-		var tc *TileCollection
-
 		subgroup := &Group{subbtn}
 
-		tc = &TileCollection{str, same, lastnum, len(tiles), subgroup, index}
+		tc := &TileCollection{str, same, lastnum, len(tiles), subgroup, index}
 
 		window.tilecollection = append(window.tilecollection, tc)
 
@@ -221,9 +219,11 @@ func registerDirection(direction, cnttile string, i int64, index map[uint8]map[s
 	index[num][cnttile] = append(index[num][cnttile], i)
 }
 
-func readObjects(path string, window *Window) {
+func ReadObjects(path string, window *Window) {
 	objects, err := GE.ReadStructures(path)
 	Check(err, "Objectfolder is broken")
+
+	objbtns := make([]*GE.Button, 0)
 
 	for i, object := range objects {
 		btnImg := object.NUA.GetDay()
@@ -234,8 +234,10 @@ func readObjects(path string, window *Window) {
 			window.currentStructure = button.Data.(*GE.Structure)
 		})
 
-		window.objectbuttons.Add(button)
+		objbtns = append(objbtns, button)
 
 		window.wrld.AddStruct(object)
 	}
+
+	window.objectbuttons = GE.GetScrollPanel(1000, 400, 600, 490, objbtns...)
 }

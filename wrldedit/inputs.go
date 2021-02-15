@@ -1,7 +1,6 @@
 package wrldedit
 
 import (
-	"fmt"
 	"math"
 	"strconv"
 
@@ -37,8 +36,7 @@ func mousebuttonleftPressed(w *Window) {
 				}
 			}
 		case 2:
-			fmt.Println(w.selectedVar)
-			w.wrld.RegionMat.Set(ix, iy, int64(w.selectedVar))
+			w.wrld.RegionMat.Fill(ix-w.brushsize, iy-w.brushsize, ix+w.brushsize, iy+w.brushsize, int64(w.selectedVar))
 		}
 
 		/*lightID, _ := w.wrld.LIdxMat.Get(ix, iy)
@@ -105,7 +103,7 @@ func mousebuttonleftJustPressed(w *Window) {
 				break
 			}
 
-			rx, ry := math.Ceil(x+w.wrld.TileMat.Focus().Min().X), math.Ceil(y+w.wrld.TileMat.Focus().Min().Y)
+			rx, ry := math.Floor(x+w.wrld.TileMat.Focus().Min().X), math.Floor(y+w.wrld.TileMat.Focus().Min().Y)
 			structObj := GE.GetStructureObj(w.currentStructure, rx, ry)
 			w.curretObject = structObj
 			w.wrld.AddStructObj(structObj)
@@ -147,23 +145,6 @@ func mousebuttonrightPressed(w *Window) {
 }
 
 func keyPressed(w *Window) {
-
-	if (ebiten.IsKeyPressed(ebiten.KeyA) && !ebiten.IsKeyPressed(ebiten.KeyShift)) || (inpututil.IsKeyJustPressed(ebiten.KeyA) && ebiten.IsKeyPressed(ebiten.KeyShift)) {
-		w.wrld.Move(-1, 0, true, false)
-	}
-
-	if (ebiten.IsKeyPressed(ebiten.KeyD) && !ebiten.IsKeyPressed(ebiten.KeyShift)) || (inpututil.IsKeyJustPressed(ebiten.KeyD) && ebiten.IsKeyPressed(ebiten.KeyShift)) {
-		w.wrld.Move(1, 0, true, false)
-	}
-
-	if (ebiten.IsKeyPressed(ebiten.KeyW) && !ebiten.IsKeyPressed(ebiten.KeyShift)) || (inpututil.IsKeyJustPressed(ebiten.KeyW) && ebiten.IsKeyPressed(ebiten.KeyShift)) {
-		w.wrld.Move(0, -1, true, false)
-	}
-
-	if (ebiten.IsKeyPressed(ebiten.KeyS) && !ebiten.IsKeyPressed(ebiten.KeyShift)) || (inpututil.IsKeyJustPressed(ebiten.KeyS) && ebiten.IsKeyPressed(ebiten.KeyShift)) {
-		w.wrld.Move(0, 1, true, false)
-	}
-
 	if w.curType == 1 && w.curretObject != nil {
 		objctX := w.curretObject.Hitbox.Min().X
 		objctY := w.curretObject.Hitbox.Min().Y
