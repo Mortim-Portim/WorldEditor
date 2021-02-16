@@ -26,7 +26,7 @@ func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
 		indexs = append(indexs, mis)
 	}
 
-	tilebutton := make([]UpdateAble, 0)
+	tilebutton := make([]*GE.Button, 0)
 	lastnum := 0
 
 	for i, str := range indexs {
@@ -60,11 +60,11 @@ func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
 			tiles = append(tiles, mistxt)
 		}
 
-		subbtn := make([]UpdateAble, 0)
+		subbtn := make([]*GE.Button, 0)
 		index := make(map[uint8]map[string][]int64)
 
 		for k, tile := range tiledata {
-			registerDirection(tile.GetStringElse("Direction", ""), tile.GetStringElse("Tile", "Default"), int64(k+lastnum), index)
+			registerDirection(tile.GetStringElse("Direction", ""), tile.GetStringElse("Tile", "Default"), tile.GetIntElse("Weight", 1), int64(k+lastnum), index)
 
 			for m := 0; true; k++ {
 				direction, avab := tile.GetString("Direction" + strconv.Itoa(m))
@@ -73,7 +73,7 @@ func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
 					break
 				}
 
-				registerDirection(direction, tile.GetStringElse("Tile"+strconv.Itoa(k), "Default"), int64(k+lastnum), index)
+				registerDirection(direction, tile.GetStringElse("Tile"+strconv.Itoa(k), "Default"), tile.GetIntElse("Weight", 1), int64(k+lastnum), index)
 			}
 
 			rotation := tile.GetFloat64Else("Rotation", 0)
@@ -99,7 +99,7 @@ func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
 			subbtn = append(subbtn, button)
 		}
 
-		mbutton := GE.GetImageButton(subbtn[0].(*GE.Button).Img.Img, float64(1000+(i%8)*70), 500+(math.Ceil(float64(i/8)))*70, 64, 64)
+		mbutton := GE.GetImageButton(subbtn[0].Img.Img, float64(1000+(i%8)*70), 500+(math.Ceil(float64(i/8)))*70, 64, 64)
 		mbutton.Data = i
 		mbutton.RegisterOnLeftEvent(func(b *GE.Button) {
 
@@ -112,17 +112,12 @@ func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
 		})
 
 		tilebutton = append(tilebutton, mbutton)
-
-		subgroup := &Group{subbtn}
-
-		tc := &TileCollection{str, same, lastnum, len(tiles), subgroup, index}
-
+		tc := &TileCollection{str, same, lastnum, len(tiles), GE.GetScrollPanel(1000, 700, 600, 290, subbtn...), index}
 		window.tilecollection = append(window.tilecollection, tc)
-
 		lastnum += len(tiles)
 	}
 
-	window.tilebuttons.Add(tilebutton...)
+	window.tilebuttons.Add(GE.GetScrollPanel(1000, 500, 600, 190, tilebutton...))
 }
 
 func Check(err error, msg string) {
@@ -181,7 +176,7 @@ func detectMissingIP(directory []os.FileInfo, ip []InputParam) (missing []string
 	return
 }
 
-func registerDirection(direction, cnttile string, i int64, index map[uint8]map[string][]int64) {
+func registerDirection(direction, cnttile string, weight int, i int64, index map[uint8]map[string][]int64) {
 	spldirection := []rune(direction)
 	num := uint8(0)
 
@@ -216,7 +211,9 @@ func registerDirection(direction, cnttile string, i int64, index map[uint8]map[s
 		index[num][cnttile] = make([]int64, 0)
 	}
 
-	index[num][cnttile] = append(index[num][cnttile], i)
+	for w := 0; w < weight; w++ {
+		index[num][cnttile] = append(index[num][cnttile], i)
+	}
 }
 
 func ReadObjects(path string, window *Window) {

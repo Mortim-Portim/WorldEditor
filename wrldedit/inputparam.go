@@ -70,3 +70,29 @@ func (ip InputParam) GetFloat64Else(key string, els float64) float64 {
 		return els
 	}
 }
+
+func (ip InputParam) GetInt(key string) (int, bool) {
+	str, avab := ip.param[key]
+
+	if !avab {
+		return 0, false
+	}
+
+	nt, err := strconv.Atoi(str)
+
+	if err != nil {
+		return 0, false
+	}
+
+	return nt, true
+}
+
+func (ip InputParam) GetIntElse(key string, els int) int {
+	nt, avab := ip.GetInt(key)
+
+	if avab {
+		return nt
+	} else {
+		return els
+	}
+}

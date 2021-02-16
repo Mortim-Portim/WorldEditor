@@ -27,6 +27,7 @@ stone
 stones
 stonescopper
 stones_D
+stones_U
 stonewalldiagonelLU
 stonewalldiagonelLD
 stonewalldiagonelRU

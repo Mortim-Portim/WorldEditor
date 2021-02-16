@@ -1,3 +1,4 @@
+Info Same:magicwater
 magictile000.png
 magicgrassgrass_D.png Direction:U
 magicgrassgrass_D.png Direction:D,Rotation:180

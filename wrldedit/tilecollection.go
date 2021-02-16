@@ -2,13 +2,15 @@ package wrldedit
 
 import (
 	"math/rand"
+
+	"github.com/mortim-portim/GraphEng/GE"
 )
 
 type TileCollection struct {
 	name        string
 	same        []string
 	start, rang int
-	subbuttons  *Group
+	subbuttons  *GE.ScrollPanel
 	index       map[uint8]map[string][]int64
 }
 
@@ -24,7 +26,7 @@ func (tc *TileCollection) GetRange() int {
 	return tc.rang
 }
 
-func (tc *TileCollection) GetSubButtons() *Group {
+func (tc *TileCollection) GetSubButtons() *GE.ScrollPanel {
 	return tc.subbuttons
 }
 

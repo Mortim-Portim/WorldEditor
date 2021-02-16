@@ -12,3 +12,4 @@ sand
 stone
 water
 wall
+farmland

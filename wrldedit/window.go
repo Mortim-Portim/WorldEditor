@@ -30,7 +30,7 @@ type Window struct {
 	useSub         bool
 	tilecollection []*TileCollection
 	tilebuttons    *Group
-	tilesubbuttons *Group
+	tilesubbuttons *GE.ScrollPanel
 	importedTiles  []string
 
 	//Object
@@ -73,7 +73,9 @@ func (w *Window) update() {
 	switch w.curType {
 	case 0:
 		w.tilebuttons.Update(w.frame)
-		w.tilesubbuttons.Update(w.frame)
+		if w.tilesubbuttons != nil {
+			w.tilesubbuttons.Update(w.frame)
+		}
 	case 1:
 		w.objectbuttons.Update(w.frame)
 	case 2:
@@ -86,22 +88,24 @@ func (w *Window) update() {
 	}
 }
 
-func (g *Window) draw(screen *ebiten.Image) {
+func (w *Window) draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{0x00, 0xA0, 0x00, 0xff})
-	g.objects.Draw(screen)
-	g.wrld.UpdateAllLightsIfNecassary()
-	g.wrld.UpdateObjDrawables()
-	g.wrld.Draw(screen)
+	w.objects.Draw(screen)
+	w.wrld.UpdateAllLightsIfNecassary()
+	w.wrld.UpdateObjDrawables()
+	w.wrld.Draw(screen)
 
-	switch g.curType {
+	switch w.curType {
 	case 0:
-		g.tilebuttons.Draw(screen)
-		g.tilesubbuttons.Draw(screen)
+		w.tilebuttons.Draw(screen)
+		if w.tilesubbuttons != nil {
+			w.tilesubbuttons.Draw(screen)
+		}
 	case 1:
-		g.objectbuttons.Draw(screen)
+		w.objectbuttons.Draw(screen)
 	case 2:
-		g.regionbuttons.Draw(screen)
-		g.regselectbutton.Draw(screen)
+		w.regionbuttons.Draw(screen)
+		w.regselectbutton.Draw(screen)
 	}
 }
 
@@ -110,7 +114,7 @@ func (g *Window) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func GetWindow(wrld *WorldStructure) (window *Window) {
-	window = &Window{wrld: wrld, objects: GetGroup(), tilebuttons: GetGroup(), tilesubbuttons: GetGroup(), regionbuttons: GetGroup(), regselectbutton: GetGroup()}
+	window = &Window{wrld: wrld, objects: GetGroup(), tilebuttons: GetGroup(), regionbuttons: GetGroup(), regselectbutton: GetGroup()}
 
 	pathlabel := GE.GetEditText("Path", 1000, 120, 50, 25, GE.StandardFont, color.Black, color.White)
 	window.pathlabel = pathlabel
