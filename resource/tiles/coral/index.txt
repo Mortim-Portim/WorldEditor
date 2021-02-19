@@ -1,1 +1,14 @@
-coral000.png
+sandstone.png
+sandstoneCLD.png Direction:UR,Tile:sand
+sandstoneCLU.png Direction:RD,Tile:sand
+sandstoneCRD.png Direction:UL,Tile:sand
+sandstoneCRU.png Direction:LD,Tile:sand
+sandstoneD.png Direction:U,Tile:sand
+sandstoneL.png Direction:R,Tile:sand
+sandstoneLD.png Direction:K,Tile:sand
+sandstoneLU.png Direction:M,Tile:sand
+sandstoneR.png Direction:L,Tile:sand
+sandstoneRD.png Direction:Q,Tile:sand
+sandstoneRU.png Direction:N,Tile:sand
+sandstoneU.png Direction:D,Tile:sand
+sandstonevoidD.png Direction:D,Tile:void

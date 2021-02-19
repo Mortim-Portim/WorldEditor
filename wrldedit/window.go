@@ -123,9 +123,10 @@ func GetWindow(wrld *WorldStructure) (window *Window) {
 	importbutton := getImportButton(1000, 200, 50, "Import", window, pathlabel)
 	exportbutton := getExportButton(1200, 200, 50, "Export", window, pathlabel)
 	tilebutton := getTabButton(1000, 300, 50, 0, "Tile", window)
-	objbutton := getTabButton(1200, 300, 50, 1, "Objects", window)
-	lightbutton := getTabButton(1400, 300, 50, 2, "Region", window)
-	window.objects.Add(lightbar, pathlabel, importbutton, exportbutton, tilebutton, objbutton, lightbutton)
+	objbutton := getTabButton(1150, 300, 50, 1, "Objct", window)
+	regionbutton := getTabButton(1300, 300, 50, 2, "Region", window)
+	testbutton := getTabButton(1450, 300, 50, 3, "Test", window)
+	window.objects.Add(lightbar, pathlabel, importbutton, exportbutton, tilebutton, objbutton, regionbutton, testbutton)
 
 	brushlabel := GE.GetTextImage("Brush:", 1000, 400, 30, GE.StandardFont, color.Black, color.Transparent)
 	brushscrollbar := getBrushScrollbar(1200, 400, 300, 30, window)

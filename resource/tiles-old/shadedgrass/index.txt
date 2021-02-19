@@ -1,0 +1,17 @@
+shadedgrass1.png
+shadedgrassU.png Direction:D
+shadedgrassU.png Direction:L,Rotation:90
+shadedgrassU.png Direction:U,Rotation:180
+shadedgrassU.png Direction:R,Rotation:270
+shadedgrassLU.png Direction:M
+shadedgrassLU.png Direction:N,Rotation:90
+shadedgrassLU.png Direction:Q,Rotation:180
+shadedgrassLU.png Direction:K,Rotation:270
+shadedgrassCLU.png Direction:DR
+shadedgrassCLU.png Direction:DL,Rotation:90
+shadedgrassCLU.png Direction:UL,Rotation:180
+shadedgrassCLU.png Direction:UR,Rotation:270
+shadedgrassER.png Direction:UDL
+shadedgrassER.png Direction:ULR,Rotaion:90
+shadedgrassER.png Direction:UDR,Rotaion:180
+shadedgrassER.png Direction:DLR,Rotaion:270

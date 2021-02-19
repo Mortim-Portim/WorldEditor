@@ -1,6 +1,7 @@
 package wrldedit
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 )
@@ -9,25 +10,32 @@ type InputParam struct {
 	param map[string]string
 }
 
-func ReadTileInfo(input string) InputParam {
+type ParameterWrongError error
+
+func ReadTileInfo(input string) (InputParam, error) {
 	info := make(map[string]string)
 
 	split := strings.Split(input, " ")
 	info["Name"] = split[0]
 
-	if len(split) < 2 {
-		return InputParam{info}
+	if len(split) < 2 || split[1] == "" {
+		return InputParam{info}, nil
 	}
 
-	params := strings.Split(input, " ")[1]
+	params := split[1]
 	for _, param := range strings.Split(params, ",") {
-		pname := strings.Split(param, ":")[0]
-		parg := strings.Split(param, ":")[1]
+		parsplit := strings.Split(param, ":")
+
+		if len(parsplit) != 2 {
+			return InputParam{info}, errors.New("Failed Reading Parameters")
+		}
+		pname := parsplit[0]
+		parg := parsplit[1]
 
 		info[pname] = parg
 	}
 
-	return InputParam{info}
+	return InputParam{info}, nil
 }
 
 func (ip InputParam) GetString(key string) (string, bool) {

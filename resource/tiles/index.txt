@@ -13,3 +13,5 @@ stone
 water
 wall
 farmland
+shadedgrass
+void

@@ -26,6 +26,8 @@ func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
 		indexs = append(indexs, mis)
 	}
 
+	index.Close()
+
 	tilebutton := make([]*GE.Button, 0)
 	lastnum := 0
 
@@ -36,7 +38,8 @@ func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
 		same := make([]string, 0)
 		if len(tiles) != 0 {
 			if strings.Split(tiles[0], " ")[0] == "Info" {
-				info := ReadTileInfo(tiles[0])
+				info, err := ReadTileInfo(tiles[0])
+				Check(err, "Failed reading Info in line "+strconv.Itoa(i+1)+" in the collection "+str+"\nInput:"+tiles[0])
 
 				saminfo, avab := info.GetString("Same")
 				if avab {
@@ -52,7 +55,8 @@ func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
 		tiledata := make([]InputParam, len(tiles))
 
 		for y, n := range tiles {
-			tiledata[y] = ReadTileInfo(n)
+			tiledata[y], err = ReadTileInfo(n)
+			Check(err, "Failed reading Parameter in line "+strconv.Itoa(y+1)+" in the collection "+str+"\nInput:"+tiles[y])
 		}
 
 		for _, mistxt := range detectMissingIP(folder, tiledata) {
@@ -60,10 +64,18 @@ func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
 			tiles = append(tiles, mistxt)
 		}
 
+		cltindex.Close()
+
 		subbtn := make([]*GE.Button, 0)
 		index := make(map[uint8]map[string][]int64)
 
 		for k, tile := range tiledata {
+			name, avab := tile.GetString("Name")
+
+			if name == "" || !avab {
+				continue
+			}
+
 			registerDirection(tile.GetStringElse("Direction", ""), tile.GetStringElse("Tile", "Default"), tile.GetIntElse("Weight", 1), int64(k+lastnum), index)
 
 			for m := 0; true; k++ {
@@ -77,10 +89,8 @@ func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
 			}
 
 			rotation := tile.GetFloat64Else("Rotation", 0)
-			name, _ := tile.GetString("Name")
-
 			img, err := GE.LoadDayNightImg(path+str+"/"+name, 0, 0, 0, 0, rotation)
-			Check(err, "Image "+name+" not loading")
+			Check(err, "Image "+name+" in Collection "+str+" not loading")
 			img.ScaleToOriginalSize()
 			ws.AddTile(&GE.Tile{img, strconv.Itoa(i)})
 

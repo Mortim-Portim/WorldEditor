@@ -95,6 +95,7 @@ func mousebuttonleftJustPressed(w *Window) {
 	x := (float64(dx) - wx) / w.wrld.GetTileS()
 	y := (float64(dy) - wy) / w.wrld.GetTileS()
 	ix, iy := int(x), int(y)
+	tx, ty := w.wrld.TileMat.Focus().Min().X, w.wrld.TileMat.Focus().Min().Y
 
 	if x >= 0 && ix < w.wrld.TileMat.W() && y >= 0 && iy < w.wrld.TileMat.H() {
 		switch w.curType {
@@ -103,11 +104,18 @@ func mousebuttonleftJustPressed(w *Window) {
 				break
 			}
 
-			rx, ry := math.Floor(x+w.wrld.TileMat.Focus().Min().X), math.Floor(y+w.wrld.TileMat.Focus().Min().Y)
+			rx, ry := math.Floor(x+tx), math.Floor(y+ty)
 			structObj := GE.GetStructureObj(w.currentStructure, rx, ry)
 			w.curretObject = structObj
 			w.wrld.AddStructObj(structObj)
 			w.wrld.UpdateObjMat()
+		case 3:
+			way := GE.FindPathMat(w.wrld.WorldStructure, [2]int{0, 0}, [2]int{ix + int(tx), iy + int(ty)})
+
+			w.wrld.RegionMat.Clear(0)
+			for _, node := range way {
+				w.wrld.RegionMat.SetAbs(node[0], node[1], 1)
+			}
 		}
 	}
 }
