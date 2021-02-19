@@ -1,8 +1,0 @@
-wallD.png Direction:UD
-wallL.png Direction:LR
-wallLU.png Direction:UL
-wallRU.png Direction:UR
-wallLD.png Direction:DL
-wallRD.png Direction:DR
-wallR.png
-wallU.png

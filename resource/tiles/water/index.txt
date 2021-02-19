@@ -1,4 +1,5 @@
-waterF.png
+waterF.png Weight:10
+water1.png
 waterdirtU.png Direction:U
 waterdirtD.png Direction:D
 waterdirtL.png Direction:L
@@ -35,3 +36,4 @@ watergrassLU.png Tile:grass,Direction:UL
 watergrassRU.png Tile:grass,Direction:UR
 watergrassLD.png Tile:grass,Direction:DL
 watergrassRD.png Tile:grass,Direction:DR
+water1.png

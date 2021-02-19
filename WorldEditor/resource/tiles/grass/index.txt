@@ -1,4 +1,0 @@
-grass000.png
-grass001.png
-grass002.png
-grass003.png Weight:36

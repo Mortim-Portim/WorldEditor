@@ -1,2 +1,0 @@
-farmland.png
-farmlandcarrot.png

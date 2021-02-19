@@ -13,8 +13,6 @@ func main() {
 	GE.Init("./resource/VT323.ttf")
 
 	wrld := wrldedit.GetWorldStructure(20, 40, 900, 800, 100, 100, 900, 800)
-	wrld.GetFrame(1, 128, 1)
-
 	window := wrldedit.GetWindow(wrld)
 
 	ebiten.SetWindowSize(wrldedit.ScreenWidth, wrldedit.ScreenHeight)

@@ -1,9 +1,0 @@
-magicwater.png
-magicwaterU.png Direction:U
-magicwaterU.png Direction:R,Rotation:90
-magicwaterU.png Direction:D,Rotation:180
-magicwaterU.png Direction:L,Rotation:270
-magicwaterUL.png Direction:UL
-magicwaterUL.png Direction:UR,Rotation:90
-magicwaterUL.png Direction:DR,Rotation:180
-magicwaterUL.png Direction:DL,Rotation:270

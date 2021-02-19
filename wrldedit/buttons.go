@@ -40,6 +40,23 @@ func getExportButton(x, y, h float64, name string, window *Window, input *GE.Edi
 	return
 }
 
+func getToggleFrameButton(x, y, h float64, window *Window) (btn *GE.Button) {
+	btn = GE.GetTextButton("Grid", "", GE.StandardFont, x, y, h, color.Black, color.White)
+	btn.RegisterOnLeftEvent(func(btn *GE.Button) {
+		if !btn.LPressed {
+			return
+		}
+
+		if window.wrld.HasFrame() {
+			window.wrld.GetFrame(0, 255, 1)
+		} else {
+			window.wrld.GetFrame(1, 255, 1)
+		}
+	})
+
+	return
+}
+
 func getCrtNwRegionButton(x, y, h float64, window *Window, rgb *GE.EditText) (btn *GE.Button) {
 	btn = GE.GetTextButton("New", "", GE.StandardFont, x, y, h, color.Black, color.White)
 	btn.RegisterOnLeftEvent(func(btn *GE.Button) {

@@ -1,7 +1,0 @@
-spriteWidth:    16
-updatePeriod:   0
-hitBoxWidth:    0.2
-hitBoxHeight:   0.2
-Collides:       true
-squareSize:     16
-Background:     true

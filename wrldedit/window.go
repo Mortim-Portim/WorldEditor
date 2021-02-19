@@ -89,7 +89,7 @@ func (w *Window) update() {
 }
 
 func (w *Window) draw(screen *ebiten.Image) {
-	screen.Fill(color.RGBA{0x00, 0xA0, 0x00, 0xff})
+	screen.Fill(color.RGBA{0, 0, 0, 255})
 	w.objects.Draw(screen)
 	w.wrld.UpdateAllLightsIfNecassary()
 	w.wrld.UpdateObjDrawables()
@@ -122,17 +122,18 @@ func GetWindow(wrld *WorldStructure) (window *Window) {
 	lightbar := getLightlevelScrollbar(1000, 50, 500, 30, window)
 	importbutton := getImportButton(1000, 200, 50, "Import", window, pathlabel)
 	exportbutton := getExportButton(1200, 200, 50, "Export", window, pathlabel)
+	gridbutton := getToggleFrameButton(1400, 200, 50, window)
 	tilebutton := getTabButton(1000, 300, 50, 0, "Tile", window)
 	objbutton := getTabButton(1150, 300, 50, 1, "Objct", window)
 	regionbutton := getTabButton(1300, 300, 50, 2, "Region", window)
 	testbutton := getTabButton(1450, 300, 50, 3, "Test", window)
-	window.objects.Add(lightbar, pathlabel, importbutton, exportbutton, tilebutton, objbutton, regionbutton, testbutton)
+	window.objects.Add(lightbar, pathlabel, importbutton, exportbutton, gridbutton, tilebutton, objbutton, regionbutton, testbutton)
 
-	brushlabel := GE.GetTextImage("Brush:", 1000, 400, 30, GE.StandardFont, color.Black, color.Transparent)
+	brushlabel := GE.GetTextImage("Brush:", 1000, 400, 30, GE.StandardFont, color.White, color.Transparent)
 	brushscrollbar := getBrushScrollbar(1200, 400, 300, 30, window)
 	window.tilebuttons.Add(brushlabel, brushscrollbar)
 
-	alphalabel := GE.GetTextImage("Overlay:", 1000, 500, 30, GE.StandardFont, color.Black, color.Transparent)
+	alphalabel := GE.GetTextImage("Overlay:", 1000, 500, 30, GE.StandardFont, color.White, color.Transparent)
 	regalphbar := getRegionAlphaScrollbar(1200, 500, 300, 30, window)
 	colorlabel := GE.GetEditText("Col", 1200, 560, 50, 6, GE.StandardFont, color.Black, color.White)
 	crtnwregionbutton := getCrtNwRegionButton(1000, 560, 50, window, colorlabel)
