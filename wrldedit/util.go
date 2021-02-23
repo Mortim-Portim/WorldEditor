@@ -12,7 +12,7 @@ func GetFrame(rect GE.Rectangle, thickness float64, alpha uint8) (frame *GE.Imag
 	x, y, w, h := rect.Min().X, rect.Min().Y, rect.Bounds().X, rect.Bounds().Y
 	frame = &GE.ImageObj{X: x, Y: y, W: w, H: h}
 
-	frameImg, _ := ebiten.NewImage(int(w), int(h), ebiten.FilterDefault)
+	frameImg := ebiten.NewImage(int(w), int(h))
 	frameImg.Fill(&color.RGBA{0, 0, 0, 0})
 
 	left := GE.GetLineOfPoints(0, 0, 0, h, thickness)

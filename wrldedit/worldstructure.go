@@ -6,11 +6,11 @@ import (
 	"github.com/mortim-portim/GraphEng/GE"
 )
 
-func GetWorldStructure(x, y, w, h float64, wTiles, hTiles, screenWT, screenHT int) *WorldStructure {
+func GetWorldStructure(x, y, w, h float64, wTiles, hTiles, screenWT, screenHT int, window *Window) *WorldStructure {
 	geWrldStrctr := GE.GetWorldStructure(x, y, w, h, wTiles, hTiles, screenWT, screenHT)
 	geWrldStrctr.SetMiddle(0, 0, true)
 	geWrldStrctr.SetDisplayWH(18, 16)
-	geWrldStrctr.SetLightStats(0, 255, 0)
+	geWrldStrctr.SetLightStats(255, func(secs int) (lv int16) { return 255 })
 
 	return &WorldStructure{geWrldStrctr, make([]*Region, 0), 0}
 }

@@ -1,8 +1,7 @@
-wallD.png Direction:UD
-wallL.png Direction:LR
-wallLU.png Direction:UL
-wallRU.png Direction:UR
-wallLD.png Direction:DL
-wallRD.png Direction:DR
-wallR.png
-wallU.png
+wall.png
+wallR.png Direction:R,Direction0:DR
+wallU.png Direction:U,Direction1:UD
+wallRU.png Direction:RQKM,Direction0:RDF
+wallLU.png Direction:LQKN,Direction0:LDF
+wallDU.png Direction:LR,Direction0:ULR
+wallDU.png Direction:FF,Rotation:180

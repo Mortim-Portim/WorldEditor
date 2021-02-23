@@ -1,0 +1,11 @@
+DwallU.png Direction:U
+DwallD.png Direction:D
+DwallL.png Direction:L
+DwallL.png Direction:R,Rotation:180
+DwallR.png Direction:FF
+DwallUR.png
+DwallRU.png Direction:FF
+DwallDR.png Direction:DR
+DwallCDR.png Direction:UL
+DwallCDR.png Direction:UR,Rotation:90
+DwallC2DR.png Direction:FF

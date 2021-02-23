@@ -21,7 +21,7 @@ func mousebuttonleftPressed(w *Window) {
 	ix, iy := int(x), int(y)
 
 	if x >= 0 && ix < w.wrld.TileMat.W() && y >= 0 && iy < w.wrld.TileMat.H() {
-		switch w.curType {
+		switch w.tabview.CurrentTab {
 		case 0:
 			if w.useSub {
 				w.wrld.TileMat.Set(ix, iy, int64(w.selectedVar))
@@ -98,24 +98,13 @@ func mousebuttonleftJustPressed(w *Window) {
 	tx, ty := w.wrld.TileMat.Focus().Min().X, w.wrld.TileMat.Focus().Min().Y
 
 	if x >= 0 && ix < w.wrld.TileMat.W() && y >= 0 && iy < w.wrld.TileMat.H() {
-		switch w.curType {
+		switch w.tabview.CurrentTab {
 		case 1:
-			if w.currentStructure == nil {
-				break
-			}
-
 			rx, ry := math.Floor(x+tx), math.Floor(y+ty)
-			structObj := GE.GetStructureObj(w.currentStructure, rx, ry)
+			structObj := GE.GetStructureObj(w.wrld.Structures[w.curType], rx, ry)
 			w.curretObject = structObj
 			w.wrld.AddStructObj(structObj)
 			w.wrld.UpdateObjMat()
-		case 3:
-			way := GE.FindPathMat(w.wrld.WorldStructure, [2]int{0, 0}, [2]int{ix + int(tx), iy + int(ty)})
-
-			w.wrld.RegionMat.Clear(0)
-			for _, node := range way {
-				w.wrld.RegionMat.SetAbs(node[0], node[1], 1)
-			}
 		}
 	}
 }
@@ -128,7 +117,7 @@ func mousebuttonrightPressed(w *Window) {
 	ix, iy := int(x), int(y)
 
 	if x >= 0 && ix < w.wrld.TileMat.W() && y >= 0 && iy < w.wrld.TileMat.H() {
-		switch w.curType {
+		switch w.tabview.CurrentTab {
 		case 1:
 			structureID, _ := findObject(w.wrld, x+w.wrld.TileMat.Focus().Min().X, y+w.wrld.TileMat.Focus().Min().Y)
 

@@ -8,7 +8,7 @@ import (
 )
 
 func GetRegion(color color.Color) *Region {
-	img, _ := ebiten.NewImage(16, 16, ebiten.FilterDefault)
+	img := ebiten.NewImage(16, 16)
 	img.Fill(color)
 	imgobj := &GE.ImageObj{Img: img}
 	return &Region{imgobj}

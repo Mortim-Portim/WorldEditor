@@ -11,9 +11,7 @@ import (
 
 func main() {
 	GE.Init("./resource/VT323.ttf")
-
-	wrld := wrldedit.GetWorldStructure(20, 40, 900, 800, 100, 100, 900, 800)
-	window := wrldedit.GetWindow(wrld)
+	window := wrldedit.GetWindow()
 
 	ebiten.SetWindowSize(wrldedit.ScreenWidth, wrldedit.ScreenHeight)
 	ebiten.SetWindowResizable(true)

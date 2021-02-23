@@ -7,8 +7,8 @@ import (
 	"github.com/mortim-portim/GraphEng/GE"
 )
 
-func getTabButton(x, y, h float64, id int, name string, window *Window) (btn *GE.Button) {
-	btn = GE.GetTextButton(name, "", GE.StandardFont, x, y, h, color.Black, color.White)
+func getTabButton(x, y, w, h float64, id int, name string, window *Window) (btn *GE.Button) {
+	btn = GE.GetSizedTextButton(name, GE.StandardFont, x, y, w, h, color.Black, color.White)
 	btn.Data = id
 	btn.RegisterOnLeftEvent(func(btn *GE.Button) {
 		window.curType = btn.Data.(int)
@@ -79,6 +79,26 @@ func getCrtNwRegionButton(x, y, h float64, window *Window, rgb *GE.EditText) (bt
 	return
 }
 
+func getChangeSizeButton(x, y, h float64, window *Window, width, height *GE.EditText) (btn *GE.Button) {
+	btn = GE.GetTextButton("Change", "", GE.StandardFont, x, y, h, color.Black, color.White)
+	btn.RegisterOnLeftEvent(func(btn *GE.Button) {
+		if !btn.LPressed {
+			return
+		}
+
+		width, err0 := strconv.Atoi(width.GetText())
+		height, err1 := strconv.Atoi(height.GetText())
+
+		if err0 != nil || err1 != nil {
+			return
+		}
+
+		window.wrld.ScaleTo(width, height)
+	})
+
+	return
+}
+
 func getRegionAlphaScrollbar(x, y, w, h float64, window *Window) (scrollbar *GE.ScrollBar) {
 	scrollbar = GE.GetStandardScrollbar(x, y, w, h, 0, 100, 0, GE.StandardFont)
 	scrollbar.HideValue()
@@ -100,7 +120,7 @@ func getLightlevelScrollbar(x, y, w, h float64, window *Window) (scrollbar *GE.S
 	scrollbar = GE.GetStandardScrollbar(x, y, w, h, 0, 255, 255, GE.StandardFont)
 	scrollbar.HideValue()
 	scrollbar.RegisterOnChange(func(sb *GE.ScrollBar) {
-		window.wrld.SetLightLevel(int16(sb.Current()))
+		window.wrld.SetLightLevel(int16(scrollbar.Current()))
 	})
 
 	return

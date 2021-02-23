@@ -11,13 +11,20 @@ type UpdateAble interface {
 	Draw(screen *ebiten.Image)
 }
 
-func GetGroup() *Group {
-	return &Group{make([]UpdateAble, 0)}
+func GetGroup(members ...UpdateAble) *Group {
+	return &Group{members}
 }
 
 type Group struct {
 	Members []UpdateAble
 }
+
+func (g *Group) Init(screen *ebiten.Image, data interface{}) (GE.UpdateFunc, GE.DrawFunc) {
+	return g.Update, g.Draw
+}
+
+func (g *Group) Start(screen *ebiten.Image, data interface{}) {}
+func (g *Group) Stop(screen *ebiten.Image, data interface{})  {}
 
 func (g *Group) Update(frame int) {
 	for _, member := range g.Members {

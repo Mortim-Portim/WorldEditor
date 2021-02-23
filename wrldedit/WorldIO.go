@@ -16,27 +16,21 @@ import (
 )
 
 func ImportWorld(input string, window *Window) {
-	data, err1 := ioutil.ReadFile("./resource/maps/" + input + "/map.txt")
-	if err1 != nil {
+	data, err := ioutil.ReadFile("./resource/maps/" + input + "/map.txt")
+	if err != nil {
 		return
 	}
 
-	bs := Compression.DecompressAll(data, []int{8, 8, 2, 2, 8})
+	bs := Compression.DecompressAll(data, []int{8, 8, 2, 15})
 	tilMat := GE.GetMatrix(0, 0, 0)
-	err2 := tilMat.Decompress(bs[5])
-	if err2 != nil {
+	err = tilMat.Decompress(bs[5])
+	if err != nil {
 		return
 	}
-
 	window.wrld.TileMat = tilMat
 
-	window.wrld.Objects = nil
 	window.wrld.BytesToObjects(bs[6])
-	window.wrld.UpdateObjMat()
-
-	window.wrld.Lights = nil
 	window.wrld.BytesToLights(bs[7])
-	window.wrld.UpdateLIdxMat()
 
 	regMat := GE.GetMatrix(0, 0, 0)
 	if len(bs) >= 9 {
@@ -45,10 +39,8 @@ func ImportWorld(input string, window *Window) {
 	window.wrld.RegionMat = regMat
 
 	window.wrld.SetMiddle(int(Compression.BytesToInt64(bs[0])), int(Compression.BytesToInt64(bs[1])), false)
-	window.wrld.SetLightStats(Compression.BytesToInt16(bs[2]), Compression.BytesToInt16(bs[3]), Compression.BytesToFloat64(bs[4]))
 
 	//Region
-	window.regselectbutton = GetGroup()
 	window.wrld.Region = make([]*Region, 0)
 	region, _ := os.Open("./resource/maps/" + input + "/region.txt")
 	scanner := bufio.NewScanner(region)
@@ -74,7 +66,7 @@ func AddRegion(region *Region, window *Window) {
 		window.selectedVar = btn.Data.(int)
 	})
 	window.wrld.Region = append(window.wrld.Region, region)
-	window.regselectbutton.Add(regbtn)
+	window.tabview.Screens.Members[2].(*Group).Members[0].(*GE.ScrollPanel).Add(regbtn)
 }
 
 func ExportWorld(input string, window *Window) {
@@ -95,7 +87,7 @@ func ExportWorld(input string, window *Window) {
 	for i, tile := range window.wrld.Tiles {
 		name := strconv.Itoa(i) + ".png"
 		file, _ := os.Create(folder + "/tile/" + name)
-		img, _ := ebiten.NewImage(16, 32, ebiten.FilterDefault)
+		img := ebiten.NewImage(16, 32)
 
 		tile.Draw(img, light, 255)
 		tile.Draw(img, dark, 0)

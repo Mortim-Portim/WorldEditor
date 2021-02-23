@@ -15,7 +15,7 @@ import (
 //Bug: Deleting Tile Folder
 //Bug: Changing Tile Folder
 
-func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
+func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) (*GE.ScrollPanel, []*TileCollection) {
 	files, err := ioutil.ReadDir(path)
 	Check(err, "Resource filepath is false")
 
@@ -29,6 +29,7 @@ func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
 	index.Close()
 
 	tilebutton := make([]*GE.Button, 0)
+	tilecol := make([]*TileCollection, 0)
 	lastnum := 0
 
 	for i, str := range indexs {
@@ -78,7 +79,7 @@ func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
 
 			registerDirection(tile.GetStringElse("Direction", ""), tile.GetStringElse("Tile", "Default"), tile.GetIntElse("Weight", 1), int64(k+lastnum), index)
 
-			for m := 0; true; k++ {
+			for m := 0; true; m++ {
 				direction, avab := tile.GetString("Direction" + strconv.Itoa(m))
 
 				if !avab {
@@ -118,16 +119,16 @@ func ReadTilesFromFolder(path string, ws *WorldStructure, window *Window) {
 			}
 			window.selectedVar = b.Data.(int)
 			window.useSub = false
-			window.tilesubbuttons = window.tilecollection[b.Data.(int)].GetSubButtons()
+			window.tabview.Screens.Members[0].(*Group).Members[0].(*GE.ScrollPanel).SetContent(window.tilecollection[b.Data.(int)].GetSubButtons())
 		})
 
 		tilebutton = append(tilebutton, mbutton)
-		tc := &TileCollection{str, same, lastnum, len(tiles), GE.GetScrollPanel(1000, 700, 600, 290, subbtn...), index}
-		window.tilecollection = append(window.tilecollection, tc)
+		tc := &TileCollection{str, same, lastnum, len(tiles), subbtn, index}
+		tilecol = append(tilecol, tc)
 		lastnum += len(tiles)
 	}
 
-	window.tilebuttons.Add(GE.GetScrollPanel(1000, 500, 600, 190, tilebutton...))
+	return GE.GetScrollPanel(1000, 500, 600, 190, tilebutton...), tilecol
 }
 
 func Check(err error, msg string) {
@@ -226,7 +227,7 @@ func registerDirection(direction, cnttile string, weight int, i int64, index map
 	}
 }
 
-func ReadObjects(path string, window *Window) {
+func ReadObjects(path string, window *Window) *GE.ScrollPanel {
 	objects, err := GE.ReadStructures(path)
 	Check(err, "Objectfolder is broken")
 
@@ -236,9 +237,9 @@ func ReadObjects(path string, window *Window) {
 		btnImg := object.NUA.GetDay()
 		button := GE.GetImageButton(btnImg, float64(1000+(i%8)*70), 400+(math.Ceil(float64(i/8)))*70, 64, 64)
 
-		button.Data = object
+		button.Data = i
 		button.RegisterOnLeftEvent(func(btn *GE.Button) {
-			window.currentStructure = button.Data.(*GE.Structure)
+			window.selectedVar = button.Data.(int)
 		})
 
 		objbtns = append(objbtns, button)
@@ -246,5 +247,5 @@ func ReadObjects(path string, window *Window) {
 		window.wrld.AddStruct(object)
 	}
 
-	window.objectbuttons = GE.GetScrollPanel(1000, 400, 600, 490, objbtns...)
+	return GE.GetScrollPanel(1000, 400, 600, 490, objbtns...)
 }

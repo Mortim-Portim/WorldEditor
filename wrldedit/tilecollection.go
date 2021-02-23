@@ -10,7 +10,7 @@ type TileCollection struct {
 	name        string
 	same        []string
 	start, rang int
-	subbuttons  *GE.ScrollPanel
+	subbuttons  []*GE.Button
 	index       map[uint8]map[string][]int64
 }
 
@@ -26,7 +26,7 @@ func (tc *TileCollection) GetRange() int {
 	return tc.rang
 }
 
-func (tc *TileCollection) GetSubButtons() *GE.ScrollPanel {
+func (tc *TileCollection) GetSubButtons() []*GE.Button {
 	return tc.subbuttons
 }
 
