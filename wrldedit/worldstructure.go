@@ -10,7 +10,7 @@ func GetWorldStructure(x, y, w, h float64, wTiles, hTiles, screenWT, screenHT in
 	geWrldStrctr := GE.GetWorldStructure(x, y, w, h, wTiles, hTiles, screenWT, screenHT)
 	geWrldStrctr.SetMiddle(0, 0, true)
 	geWrldStrctr.SetDisplayWH(18, 16)
-	geWrldStrctr.SetLightStats(255, func(secs int) (lv int16) { return 255 })
+	geWrldStrctr.SetLightStats(255, 255)
 
 	return &WorldStructure{geWrldStrctr, make([]*Region, 0), 0}
 }

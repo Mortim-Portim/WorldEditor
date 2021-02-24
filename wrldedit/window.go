@@ -60,7 +60,7 @@ func (w *Window) Update() error {
 }
 
 func (w *Window) Draw(screen *ebiten.Image) {
-	screen.Fill(color.RGBA{0, 0, 0, 255})
+	screen.Fill(color.RGBA{255, 255, 255, 255})
 	w.objects.Draw(screen)
 	w.wrld.UpdateAllLightsIfNecassary()
 	w.wrld.UpdateObjDrawables()
@@ -83,6 +83,7 @@ func GetWindow() (window *Window) {
 	importbutton := getImportButton(1000, 200, 30, "Import", window, pathlabel)
 	exportbutton := getExportButton(1200, 200, 30, "Export", window, pathlabel)
 	gridbutton := getToggleFrameButton(1400, 200, 30, window)
+
 	window.objects = GetGroup(lightbar, pathlabel, importbutton, exportbutton, gridbutton)
 
 	brushlabel := GE.GetTextImage("Brush:", 1000, 400, 30, GE.StandardFont, color.White, color.Transparent)

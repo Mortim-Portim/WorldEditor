@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	GE.Init("./resource/VT323.ttf")
+	GE.Init("./resource/VT323.ttf", 60)
 	window := wrldedit.GetWindow()
 
 	ebiten.SetWindowSize(wrldedit.ScreenWidth, wrldedit.ScreenHeight)

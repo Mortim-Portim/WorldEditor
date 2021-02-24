@@ -11,8 +11,8 @@ import (
 	"strings"
 
 	"github.com/hajimehoshi/ebiten"
-	"github.com/mortim-portim/GraphEng/Compression"
 	"github.com/mortim-portim/GraphEng/GE"
+	"github.com/mortim-portim/GraphEng/compression"
 )
 
 func ImportWorld(input string, window *Window) {
@@ -21,7 +21,7 @@ func ImportWorld(input string, window *Window) {
 		return
 	}
 
-	bs := Compression.DecompressAll(data, []int{8, 8, 2, 15})
+	bs := compression.DecompressAll(data, []int{8, 8, 2, 15})
 	tilMat := GE.GetMatrix(0, 0, 0)
 	err = tilMat.Decompress(bs[5])
 	if err != nil {
@@ -38,7 +38,7 @@ func ImportWorld(input string, window *Window) {
 	}
 	window.wrld.RegionMat = regMat
 
-	window.wrld.SetMiddle(int(Compression.BytesToInt64(bs[0])), int(Compression.BytesToInt64(bs[1])), false)
+	window.wrld.SetMiddle(int(compression.BytesToInt64(bs[0])), int(compression.BytesToInt64(bs[1])), false)
 
 	//Region
 	window.wrld.Region = make([]*Region, 0)
