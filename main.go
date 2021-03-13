@@ -6,7 +6,7 @@ import (
 	"github.com/mortim-portim/GraphEng/GE"
 	"github.com/mortim-portim/WorldEditor/wrldedit"
 
-	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 func main() {
